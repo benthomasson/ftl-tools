@@ -2,6 +2,8 @@
 name = "ftl-tools"
 version = "0.1.0"
 dependencies = [
+    "smolagents[litellm]==1.9.2",
+    "ftlagents",
 ]
 
 [tool.setuptools]
