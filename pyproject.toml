@@ -1,0 +1,12 @@
+[project]
+name = "ftl-tools"
+version = "0.1.0"
+dependencies = [
+]
+
+[tool.setuptools]
+packages = ["ftl_tools"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
