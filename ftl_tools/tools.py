@@ -543,6 +543,46 @@ class SwapFile(Tool):
     description, inputs, output_type = get_json_schema(forward)
 
 
+class Chown(Tool):
+    name = "chown"
+    module = "command"
+
+    def __init__(self, state, *args, **kwargs):
+        self.state = state
+        super().__init__(*args, **kwargs)
+
+    def forward(self, user: str, location: str) -> bool:
+        """Changes the ownership of a directory and the files in it.
+
+        Args:
+            location: The location of the swapfile
+            user: The size of the swapfile
+
+        Returns:
+            boolean
+        """
+        display_tool(self)
+
+        output = ftl.run_module_sync(
+            self.state["inventory"],
+            self.state["modules"],
+            "command",
+            self.state["gate_cache"],
+            module_args=dict(
+                _uses_shell=True,
+                _raw_params=f"chown -R {user} {location}",
+            ),
+            dependencies=dependencies,
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
+
+        display_results(output)
+
+        return True
+
+    description, inputs, output_type = get_json_schema(forward)
+
 __all__ = [
     "Service",
     "LineInFile",
@@ -556,6 +596,7 @@ __all__ = [
     "Linode",
     "FirewallD",
     "SwapFile",
+    "Chown",
 ]
 
 
