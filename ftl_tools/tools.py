@@ -39,6 +39,7 @@ def display_results(output):
 
 class Service(Tool):
     name = "service"
+    module = "service"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
@@ -76,6 +77,7 @@ class Service(Tool):
 
 class LineInFile(Tool):
     name = "lineinfile"
+    module = "lineinfile"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
@@ -116,12 +118,13 @@ class LineInFile(Tool):
 
 class AuthorizedKey(Tool):
     name = "authorized_key"
+    module = "authorized_key"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, user: str, state: str, key: str) -> bool:
+    def forward(self, user: str, key: str, state: str ="present") -> bool:
         """Manage authorized keys and upload public keys to the remote node
 
         Args:
@@ -158,6 +161,7 @@ class AuthorizedKey(Tool):
 
 class User(Tool):
     name = "user"
+    module = "user"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
@@ -198,6 +202,7 @@ class User(Tool):
 
 class Dnf(Tool):
     name = "dnf"
+    module = "dnf"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
@@ -234,6 +239,7 @@ class Dnf(Tool):
 
 class Apt(Tool):
     name = "apt"
+    module = "apt"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
@@ -270,6 +276,7 @@ class Apt(Tool):
 
 class Hostname(Tool):
     name = "hostname"
+    module = "hostname"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
@@ -426,6 +433,7 @@ class FirewallD(Tool):
 
 class Linode(Tool):
     name = "linode"
+    module = None
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
@@ -486,6 +494,55 @@ class Linode(Tool):
     description, inputs, output_type = get_json_schema(forward)
 
 
+class SwapFile(Tool):
+    name = "swapfile"
+    module = "command"
+
+    def __init__(self, state, *args, **kwargs):
+        self.state = state
+        super().__init__(*args, **kwargs)
+
+    def forward(self, location: str, size: int, permanent: bool = True) -> bool:
+        """Creates a swapfile
+
+        Args:
+            location: The location of the swapfile
+            size: The size of the swapfile
+            permanent: True if permanent
+
+        Returns:
+            boolean
+        """
+        display_tool(self)
+
+        def run_command(command):
+
+            output = ftl.run_module_sync(
+                self.state["inventory"],
+                self.state["modules"],
+                "command",
+                self.state["gate_cache"],
+                module_args=dict(
+                    _uses_shell=True,
+                    _raw_params=command,
+                ),
+                dependencies=dependencies,
+                loop=self.state["loop"],
+                use_gate=self.state["gate"],
+            )
+
+            display_results(output)
+
+        run_command(f"dd if=/dev/zero of={location} bs={size} count={int(size * 1024)}")
+        run_command(f"mkswap {location}")
+        run_command(f"chmod 600 {location}")
+        run_command(f"swapon {location}")
+
+        return True
+
+    description, inputs, output_type = get_json_schema(forward)
+
+
 __all__ = [
     "Service",
     "LineInFile",
@@ -498,6 +555,7 @@ __all__ = [
     "Discord",
     "Linode",
     "FirewallD",
+    "SwapFile",
 ]
 
 
