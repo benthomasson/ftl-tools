@@ -6,10 +6,12 @@ import os
 import faster_than_light as ftl
 import shutil
 import logging
+import yaml
 from pprint import pformat, pprint
+from linode_api4 import LinodeClient
 
 
-logger = logging.getLogger('tools')
+logger = logging.getLogger("tools")
 
 dependencies = [
     "ftl_module_utils @ git+https://github.com/benthomasson/ftl_module_utils@main",
@@ -55,15 +57,15 @@ class Service(Tool):
         display_tool(self)
 
         output = ftl.run_module_sync(
-                self.state["inventory"],
-                self.state["modules"],
-                "service",
-                self.state["gate_cache"],
-                module_args=dict(name=name, state=state),
-                dependencies=dependencies,
-                loop=self.state['loop'],
-                use_gate=self.state['gate'],
-            )
+            self.state["inventory"],
+            self.state["modules"],
+            "service",
+            self.state["gate_cache"],
+            module_args=dict(name=name, state=state),
+            dependencies=dependencies,
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
 
         display_results(output)
 
@@ -79,7 +81,9 @@ class LineInFile(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, line: str, path: str, state: str = "present", regexp: str = None) -> bool:
+    def forward(
+        self, line: str, path: str, state: str = "present", regexp: str = None
+    ) -> bool:
         """Add a line to a file
 
         Args:
@@ -93,15 +97,15 @@ class LineInFile(Tool):
         """
         display_tool(self)
         output = ftl.run_module_sync(
-                self.state["inventory"],
-                self.state["modules"],
-                "lineinfile",
-                self.state["gate_cache"],
-                module_args=dict(line=line, state=state, path=path, regexp=regexp),
-                dependencies=dependencies,
-                loop=self.state['loop'],
-                use_gate=self.state['gate'],
-            )
+            self.state["inventory"],
+            self.state["modules"],
+            "lineinfile",
+            self.state["gate_cache"],
+            module_args=dict(line=line, state=state, path=path, regexp=regexp),
+            dependencies=dependencies,
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
 
         display_results(output)
 
@@ -135,15 +139,15 @@ class AuthorizedKey(Tool):
         with open(key) as f:
             key_value = f.read()
         output = ftl.run_module_sync(
-                self.state["inventory"],
-                self.state["modules"],
-                "authorized_key",
-                self.state["gate_cache"],
-                module_args=dict(user=user, state=state, key=key_value),
-                dependencies=dependencies,
-                loop=self.state['loop'],
-                use_gate=self.state['gate'],
-            )
+            self.state["inventory"],
+            self.state["modules"],
+            "authorized_key",
+            self.state["gate_cache"],
+            module_args=dict(user=user, state=state, key=key_value),
+            dependencies=dependencies,
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
 
         display_results(output)
 
@@ -171,19 +175,19 @@ class User(Tool):
         """
         display_tool(self)
         output = ftl.run_module_sync(
-                self.state["inventory"],
-                self.state["modules"],
-                "user",
-                self.state["gate_cache"],
-                module_args=dict(
-                    name=name,
-                    create_home=True,
-                    group=group,
-                ),
-                dependencies=dependencies,
-                loop=self.state['loop'],
-                use_gate=self.state['gate'],
-            )
+            self.state["inventory"],
+            self.state["modules"],
+            "user",
+            self.state["gate_cache"],
+            module_args=dict(
+                name=name,
+                create_home=True,
+                group=group,
+            ),
+            dependencies=dependencies,
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
 
         display_results(output)
 
@@ -211,15 +215,15 @@ class Dnf(Tool):
         """
         display_tool(self)
         output = ftl.run_module_sync(
-                self.state["inventory"],
-                self.state["modules"],
-                "dnf",
-                self.state["gate_cache"],
-                module_args=dict(name=name, state=state),
-                dependencies=dependencies,
-                loop=self.state['loop'],
-                use_gate=self.state['gate'],
-            )
+            self.state["inventory"],
+            self.state["modules"],
+            "dnf",
+            self.state["gate_cache"],
+            module_args=dict(name=name, state=state),
+            dependencies=dependencies,
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
 
         display_results(output)
 
@@ -247,15 +251,15 @@ class Apt(Tool):
         """
         display_tool(self)
         output = ftl.run_module_sync(
-                self.state["inventory"],
-                self.state["modules"],
-                "apt",
-                self.state["gate_cache"],
-                module_args=dict(update_cache=update_cache, upgrade=upgrade),
-                dependencies=dependencies,
-                loop=self.state['loop'],
-                use_gate=self.state['gate'],
-            )
+            self.state["inventory"],
+            self.state["modules"],
+            "apt",
+            self.state["gate_cache"],
+            module_args=dict(update_cache=update_cache, upgrade=upgrade),
+            dependencies=dependencies,
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
 
         display_results(output)
 
@@ -282,15 +286,15 @@ class Hostname(Tool):
         """
         display_tool(self)
         output = ftl.run_module_sync(
-                self.state["inventory"],
-                self.state["modules"],
-                "hostname",
-                self.state["gate_cache"],
-                module_args=dict(name=name),
-                dependencies=dependencies,
-                loop=self.state['loop'],
-                use_gate=self.state['gate'],
-            )
+            self.state["inventory"],
+            self.state["modules"],
+            "hostname",
+            self.state["gate_cache"],
+            module_args=dict(name=name),
+            dependencies=dependencies,
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
 
         display_results(output)
 
@@ -317,14 +321,14 @@ class Slack(Tool):
         """
         display_tool(self)
         output = ftl.run_module_sync(
-                self.state["localhost"],
-                self.state["modules"],
-                "slack",
-                self.state["gate_cache"],
-                module_args=dict(msg=msg, token=self.state["slack_token"]),
-                loop=self.state['loop'],
-                use_gate=self.state['gate'],
-            )
+            self.state["localhost"],
+            self.state["modules"],
+            "slack",
+            self.state["gate_cache"],
+            module_args=dict(msg=msg, token=self.state["slack_token"]),
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
 
         display_results(output)
 
@@ -351,43 +355,20 @@ class Discord(Tool):
         """
         display_tool(self)
         output = ftl.run_module_sync(
-                self.state["localhost"],
-                self.state["modules"],
-                "discord",
-                self.state["gate_cache"],
-                module_args=dict(
-                    content=message,
-                    webhook_token=self.state["discord_token"],
-                    webhook_id=self.state["discord_channel"],
-                ),
-                loop=self.state['loop'],
-                use_gate=self.state['gate'],
-            )
+            self.state["localhost"],
+            self.state["modules"],
+            "discord",
+            self.state["gate_cache"],
+            module_args=dict(
+                content=message,
+                webhook_token=self.state["discord_token"],
+                webhook_id=self.state["discord_channel"],
+            ),
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
 
         display_results(output)
-
-        return True
-
-    description, inputs, output_type = get_json_schema(forward)
-
-
-class Linode(Tool):
-    name = "linode"
-
-    def __init__(self, state, *args, **kwargs):
-        self.state = state
-        super().__init__(*args, **kwargs)
-
-    def forward(self, name: str) -> bool:
-        """Start a new node on linode
-
-        Args:
-            name: the name of the linode
-
-        Returns:
-            boolean
-        """
-        display_tool(self)
 
         return True
 
@@ -414,9 +395,9 @@ class FirewallD(Tool):
         """
         if isinstance(port, int):
             port = f"{port}/tcp"
-        elif port.endswith('/tcp'):
+        elif port.endswith("/tcp"):
             pass
-        elif port.endswith('/udp'):
+        elif port.endswith("/udp"):
             pass
         else:
             port = f"{port}/tcp"
@@ -443,14 +424,92 @@ class FirewallD(Tool):
     description, inputs, output_type = get_json_schema(forward)
 
 
+class Linode(Tool):
+    name = "linode"
+
+    def __init__(self, state, *args, **kwargs):
+        self.state = state
+        super().__init__(*args, **kwargs)
+
+    def forward(self, name: str) -> bool:
+        """Provisions a new linode server
+
+        Args:
+            name: the name of the server
+
+        Returns:
+            boolean
+        """
+        display_tool(self)
+
+        pprint(self.state["inventory"])
+
+        # Create a Linode API client
+        with open(os.path.expanduser("~/secrets/linode_token")) as f:
+            client = LinodeClient(f.read().strip())
+
+        with open(os.path.expanduser("~/secrets/linode1")) as f:
+            root_pass = f.read().strip()
+
+        # Create a new Linode
+        new_linode = client.linode.instance_create(
+            ltype="g6-nanode-1",
+            region="us-southeast",
+            image="linode/fedora40",
+            label=name,
+            root_pass=root_pass,
+            authorized_users=["benthomasson"],
+        )
+
+        # Print info about the Linode
+        print("Linode IP:", new_linode.ipv4[0])
+
+        host_data = {
+            "ansible_user": "root",
+            "ansible_host": new_linode.ipv4[0],
+            "ansible_python_interpreter": "/usr/bin/python3",
+            "host_name": name,
+        }
+        if self.state["inventory"].get("all") is None:
+            self.state["inventory"]["all"] = {}
+        if self.state["inventory"]["all"].get("hosts") is None:
+            self.state["inventory"]["all"]["hosts"] = {}
+        self.state["inventory"]["all"]["hosts"][name] = host_data
+
+        with open("inventory.yml", "w") as f:
+            f.write(yaml.safe_dump(self.state["inventory"]))
+
+        pprint(self.state["inventory"])
+
+        return True
+
+    description, inputs, output_type = get_json_schema(forward)
+
+
+__all__ = [
+    "Service",
+    "LineInFile",
+    "AuthorizedKey",
+    "User",
+    "Dnf",
+    "Apt",
+    "Hostname",
+    "Slack",
+    "Discord",
+    "Linode",
+    "FirewallD",
+]
+
+
 if __name__ == "__main__":
     import sys
     import inspect
-    print('Tools')
+
+    print("Tools")
     for name, obj in inspect.getmembers(sys.modules[__name__]):
         if inspect.isclass(obj):
             if obj == Tool:
                 continue
             tool = obj
             description, inputs, output_type = get_json_schema(tool.forward)
-            print(f'* {tool.name} - {description}')
+            print(f"* {tool.name} - {description}")
