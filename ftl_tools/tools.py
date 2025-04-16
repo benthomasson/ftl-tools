@@ -459,6 +459,13 @@ class Linode(Tool):
         with open(os.path.expanduser("~/secrets/linode1")) as f:
             root_pass = f.read().strip()
 
+        my_linodes = client.linode.instances()
+
+        for instance in my_linodes:
+            if instance.label == name:
+                print(f"Already created {name}")
+                return True
+
         # Create a new Linode
         new_linode = client.linode.instance_create(
             ltype="g6-nanode-1",
@@ -525,6 +532,7 @@ class SwapFile(Tool):
                 module_args=dict(
                     _uses_shell=True,
                     _raw_params=command,
+                    creates=location,
                 ),
                 dependencies=dependencies,
                 loop=self.state["loop"],
@@ -533,10 +541,10 @@ class SwapFile(Tool):
 
             display_results(output)
 
-        run_command(f"dd if=/dev/zero of={location} bs={size} count={int(size * 1024)}")
-        run_command(f"mkswap {location}")
-        run_command(f"chmod 600 {location}")
-        run_command(f"swapon {location}")
+        run_command(f"dd if=/dev/zero of={location} bs={size} count={int(size * 1024)} &&"
+                    f"chmod 600 {location} &&"
+                    f"mkswap {location} &&"
+                    f"swapon {location}")
 
         return True
 
