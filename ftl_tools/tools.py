@@ -124,7 +124,7 @@ class AuthorizedKey(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, user: str, key: str, state: str ="present") -> bool:
+    def forward(self, user: str, key: str, state: str = "present") -> bool:
         """Manage authorized keys and upload public keys to the remote node
 
         Args:
@@ -583,6 +583,77 @@ class Chown(Tool):
 
     description, inputs, output_type = get_json_schema(forward)
 
+
+class Copy(Tool):
+    name = "copy"
+
+    def __init__(self, state, *args, **kwargs):
+        self.state = state
+        super().__init__(*args, **kwargs)
+
+    def forward(self, src: str, dest: str) -> bool:
+        """Copy file to remote machine
+
+        Args:
+            src: The source of the file
+            dest: The destination of the file
+
+        Returns:
+            boolean
+        """
+        display_tool(self)
+        ftl.copy_sync(
+            self.state["inventory"],
+            self.state["gate_cache"],
+            src=src,
+            dest=dest,
+            loop=self.state["loop"],
+        )
+
+        display_results({})
+
+        return True
+
+    description, inputs, output_type = get_json_schema(forward)
+
+
+class SystemDService(Tool):
+    name = "systemd_service"
+
+    def __init__(self, state, *args, **kwargs):
+        self.state = state
+        super().__init__(*args, **kwargs)
+
+    def forward(self, name: str, state: str = "started", enabled: bool = False) -> bool:
+        """Control systemd services
+
+        Args:
+            name: the name of the service
+            state: one of reloaded, restarted, started, or stopped
+            enabled: start on boot
+
+        Returns:
+            boolean
+        """
+        display_tool(self)
+        output = ftl.run_module_sync(
+            self.state["inventory"],
+            self.state["modules"],
+            "systemd_service",
+            self.state["gate_cache"],
+            module_args=dict(name=name, state=state, enabled=enabled),
+            dependencies=dependencies,
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
+
+        display_results(output)
+
+        return True
+
+    description, inputs, output_type = get_json_schema(forward)
+
+
 __all__ = [
     "Service",
     "LineInFile",
@@ -597,6 +668,8 @@ __all__ = [
     "FirewallD",
     "SwapFile",
     "Chown",
+    "Copy",
+    "SystemDService",
 ]
 
 
