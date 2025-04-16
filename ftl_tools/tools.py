@@ -625,6 +625,39 @@ class Copy(Tool):
     description, inputs, output_type = get_json_schema(forward)
 
 
+class CopyFrom(Tool):
+    name = "copy_from"
+
+    def __init__(self, state, *args, **kwargs):
+        self.state = state
+        super().__init__(*args, **kwargs)
+
+    def forward(self, src: str, dest: str) -> bool:
+        """Copy file from remote machine locally
+
+        Args:
+            src: The remote source of the file
+            dest: The local destination of the file
+
+        Returns:
+            boolean
+        """
+        display_tool(self)
+        ftl.copy_from_sync(
+            self.state["inventory"],
+            self.state["gate_cache"],
+            src=src,
+            dest=dest,
+            loop=self.state["loop"],
+        )
+
+        display_results({})
+
+        return True
+
+    description, inputs, output_type = get_json_schema(forward)
+
+
 class SystemDService(Tool):
     name = "systemd_service"
 
@@ -662,6 +695,80 @@ class SystemDService(Tool):
     description, inputs, output_type = get_json_schema(forward)
 
 
+class GetURL(Tool):
+    name = "get_url"
+
+    def __init__(self, state, *args, **kwargs):
+        self.state = state
+        super().__init__(*args, **kwargs)
+
+    def forward(self, url: str, dest: str) -> bool:
+        """Downloads a file
+
+        Args:
+            url: The url of the file
+            dest: the destination of the file
+
+        Returns:
+            boolean
+        """
+        display_tool(self)
+        output = ftl.run_module_sync(
+            self.state["inventory"],
+            self.state["modules"],
+            "get_url",
+            self.state["gate_cache"],
+            module_args=dict(
+                url=url,
+                dest=dest,
+            ),
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
+
+        display_results(output)
+
+        return True
+
+    description, inputs, output_type = get_json_schema(forward)
+
+
+class Pip(Tool):
+    name = "pip"
+
+    def __init__(self, state, *args, **kwargs):
+        self.state = state
+        super().__init__(*args, **kwargs)
+
+    def forward(self, name: str, state: str = "present") -> bool:
+        """Control dnf packages
+
+        Args:
+            name: the name of the package
+            state: one of latest, present, absent
+
+        Returns:
+            boolean
+        """
+        display_tool(self)
+        output = ftl.run_module_sync(
+            self.state["inventory"],
+            self.state["modules"],
+            "pip",
+            self.state["gate_cache"],
+            module_args=dict(name=name, state=state),
+            dependencies=dependencies,
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
+
+        display_results(output)
+
+        return True
+
+    description, inputs, output_type = get_json_schema(forward)
+
+
 __all__ = [
     "Service",
     "LineInFile",
@@ -677,7 +784,10 @@ __all__ = [
     "SwapFile",
     "Chown",
     "Copy",
+    "CopyFrom",
     "SystemDService",
+    "GetURL",
+    "Pip",
 ]
 
 
