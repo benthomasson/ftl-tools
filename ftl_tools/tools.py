@@ -7,8 +7,12 @@ import faster_than_light as ftl
 import shutil
 import logging
 import yaml
-from pprint import pformat, pprint
+import json
 from linode_api4 import LinodeClient
+
+from rich.console import Console
+from rich.pretty import pprint
+console = Console()
 
 
 logger = logging.getLogger("tools")
@@ -20,21 +24,21 @@ dependencies = [
 
 
 def display_tool(tool):
-    prefix = f"TOOL [{tool.name}] "
-    print(prefix, "=" * (shutil.get_terminal_size((80, 20))[0] - len(prefix) - 1))
+    prefix = f"\nTOOL {tool.name}"
+    console.print(prefix, "=" * (shutil.get_terminal_size((80, 20))[0] - len(prefix) - 1))
 
 
 def display_results(output):
-    logger.debug(pformat(output))
+    pprint(output, console=console)
     for name, results in output.items():
         if results.get("failed"):
             raise Exception(results.get("msg"))
         if results.get("changed"):
-            print(f"changed: [{name}]")
+            console.print(f"[yellow] changed: [{name}]")
         else:
-            print(f"ok: [{name}]")
-    print("")
-    pprint(output)
+            console.print(f"[green] ok: [{name}]")
+    console.print("")
+    console.print_json(json.dumps(output))
 
 
 class Service(Tool):
@@ -450,7 +454,7 @@ class Linode(Tool):
         """
         display_tool(self)
 
-        pprint(self.state["inventory"])
+        pprint(self.state["inventory"], console=console)
 
         # Create a Linode API client
         with open(os.path.expanduser("~/secrets/linode_token")) as f:
@@ -463,7 +467,7 @@ class Linode(Tool):
 
         for instance in my_linodes:
             if instance.label == name:
-                print(f"Already created {name}")
+                console.print(f"Already created {name}")
                 return True
 
         # Create a new Linode
@@ -477,7 +481,7 @@ class Linode(Tool):
         )
 
         # Print info about the Linode
-        print("Linode IP:", new_linode.ipv4[0])
+        console.print("Linode IP:", new_linode.ipv4[0])
 
         host_data = {
             "ansible_user": "root",
@@ -494,7 +498,7 @@ class Linode(Tool):
         with open("inventory.yml", "w") as f:
             f.write(yaml.safe_dump(self.state["inventory"]))
 
-        pprint(self.state["inventory"])
+        pprint(self.state["inventory"], console=console)
 
         return True
 
