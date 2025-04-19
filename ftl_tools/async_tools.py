@@ -24,6 +24,7 @@ dependencies = [
     "ftl_collections @ git+https://github.com/benthomasson/ftl_collections@main",
 ]
 
+
 def write_or_print(output, console, log):
 
     if log is None:
@@ -69,7 +70,7 @@ class Service(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, name: str, state: str) -> bool:
+    async def forward(self, name: str, state: str) -> bool:
         """Manager a service
 
         Args:
@@ -81,14 +82,13 @@ class Service(Tool):
         """
         display_tool(self, self.state['console'], self.state['log'])
 
-        output = ftl.run_module_sync(
+        output = await ftl.run_module(
             self.state["inventory"],
             self.state["modules"],
             "service",
             self.state["gate_cache"],
             module_args=dict(name=name, state=state),
             dependencies=dependencies,
-            loop=self.state["loop"],
             use_gate=self.state["gate"],
         )
 
@@ -107,7 +107,7 @@ class LineInFile(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(
+    async def forward(
         self, line: str, path: str, state: str = "present", regexp: str = None
     ) -> bool:
         """Add a line to a file
@@ -122,14 +122,13 @@ class LineInFile(Tool):
             boolean
         """
         display_tool(self, self.state['console'], self.state['log'])
-        output = ftl.run_module_sync(
+        output = await ftl.run_module(
             self.state["inventory"],
             self.state["modules"],
             "lineinfile",
             self.state["gate_cache"],
             module_args=dict(line=line, state=state, path=path, regexp=regexp),
             dependencies=dependencies,
-            loop=self.state["loop"],
             use_gate=self.state["gate"],
         )
 
@@ -148,7 +147,7 @@ class AuthorizedKey(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, user: str, key: str, state: str = "present") -> bool:
+    async def forward(self, user: str, key: str, state: str = "present") -> bool:
         """Manage authorized keys and upload public keys to the remote node
 
         Args:
@@ -165,14 +164,13 @@ class AuthorizedKey(Tool):
             raise Exception(f"{key} does not exist")
         with open(key) as f:
             key_value = f.read()
-        output = ftl.run_module_sync(
+        output = await ftl.run_module(
             self.state["inventory"],
             self.state["modules"],
             "authorized_key",
             self.state["gate_cache"],
             module_args=dict(user=user, state=state, key=key_value),
             dependencies=dependencies,
-            loop=self.state["loop"],
             use_gate=self.state["gate"],
         )
 
@@ -191,7 +189,7 @@ class User(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, name: str, group: str) -> bool:
+    async def forward(self, name: str, group: str) -> bool:
         """Create a user
 
         Args:
@@ -202,7 +200,7 @@ class User(Tool):
             boolean
         """
         display_tool(self, self.state['console'], self.state['log'])
-        output = ftl.run_module_sync(
+        output = await ftl.run_module(
             self.state["inventory"],
             self.state["modules"],
             "user",
@@ -213,7 +211,6 @@ class User(Tool):
                 group=group,
             ),
             dependencies=dependencies,
-            loop=self.state["loop"],
             use_gate=self.state["gate"],
         )
 
@@ -232,7 +229,7 @@ class Dnf(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, name: str, state: str) -> bool:
+    async def forward(self, name: str, state: str) -> bool:
         """Control dnf packages
 
         Args:
@@ -243,14 +240,13 @@ class Dnf(Tool):
             boolean
         """
         display_tool(self, self.state['console'], self.state['log'])
-        output = ftl.run_module_sync(
+        output = await ftl.run_module(
             self.state["inventory"],
             self.state["modules"],
             "dnf",
             self.state["gate_cache"],
             module_args=dict(name=name, state=state),
             dependencies=dependencies,
-            loop=self.state["loop"],
             use_gate=self.state["gate"],
         )
 
@@ -269,7 +265,7 @@ class Apt(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, update_cache: bool = False, upgrade: str = "no") -> bool:
+    async def forward(self, update_cache: bool = False, upgrade: str = "no") -> bool:
         """Control apt packages
 
         Args:
@@ -280,14 +276,13 @@ class Apt(Tool):
             boolean
         """
         display_tool(self, self.state['console'], self.state['log'])
-        output = ftl.run_module_sync(
+        output = await ftl.run_module(
             self.state["inventory"],
             self.state["modules"],
             "apt",
             self.state["gate_cache"],
             module_args=dict(update_cache=update_cache, upgrade=upgrade),
             dependencies=dependencies,
-            loop=self.state["loop"],
             use_gate=self.state["gate"],
         )
 
@@ -306,7 +301,7 @@ class Hostname(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, name: str) -> bool:
+    async def forward(self, name: str) -> bool:
         """Sets the hostname of the machine.
 
         Args:
@@ -316,14 +311,13 @@ class Hostname(Tool):
             boolean
         """
         display_tool(self, self.state['console'], self.state['log'])
-        output = ftl.run_module_sync(
+        output = await ftl.run_module(
             self.state["inventory"],
             self.state["modules"],
             "hostname",
             self.state["gate_cache"],
             module_args=dict(name=name),
             dependencies=dependencies,
-            loop=self.state["loop"],
             use_gate=self.state["gate"],
         )
 
@@ -341,7 +335,7 @@ class Slack(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, msg: str) -> bool:
+    async def forward(self, msg: str) -> bool:
         """Sends a message to slack.
 
         Args:
@@ -351,13 +345,12 @@ class Slack(Tool):
             boolean
         """
         display_tool(self, self.state['console'], self.state['log'])
-        output = ftl.run_module_sync(
+        output = await ftl.run_module(
             self.state["localhost"],
             self.state["modules"],
             "slack",
             self.state["gate_cache"],
             module_args=dict(msg=msg, token=self.state["slack_token"]),
-            loop=self.state["loop"],
             use_gate=self.state["gate"],
         )
 
@@ -375,7 +368,7 @@ class Discord(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, message: str) -> bool:
+    async def forward(self, message: str) -> bool:
         """Sends a message to discord.
 
         Args:
@@ -385,7 +378,7 @@ class Discord(Tool):
             boolean
         """
         display_tool(self, self.state['console'], self.state['log'])
-        output = ftl.run_module_sync(
+        output = await ftl.run_module(
             self.state["localhost"],
             self.state["modules"],
             "discord",
@@ -395,7 +388,6 @@ class Discord(Tool):
                 webhook_token=self.state["discord_token"],
                 webhook_id=self.state["discord_channel"],
             ),
-            loop=self.state["loop"],
             use_gate=self.state["gate"],
         )
 
@@ -413,7 +405,7 @@ class FirewallD(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, port: str, state: str, permanent: bool) -> bool:
+    async def forward(self, port: str, state: str, permanent: bool) -> bool:
         """Configure firewalld
 
         Args:
@@ -433,7 +425,7 @@ class FirewallD(Tool):
         else:
             port = f"{port}/tcp"
         display_tool(self, self.state['console'], self.state['log'])
-        output = ftl.run_module_sync(
+        output = await ftl.run_module(
             self.state["inventory"],
             self.state["modules"],
             "firewalld",
@@ -444,7 +436,6 @@ class FirewallD(Tool):
                 permanent=permanent,
             ),
             dependencies=dependencies,
-            loop=self.state["loop"],
             use_gate=self.state["gate"],
         )
 
@@ -463,7 +454,7 @@ class Linode(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, name: str) -> bool:
+    async def forward(self, name: str) -> bool:
         """Provisions a new linode server
 
         Args:
@@ -533,7 +524,7 @@ class SwapFile(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, location: str, size: int, permanent: bool = True) -> bool:
+    async def forward(self, location: str, size: int, permanent: bool = True) -> bool:
         """Creates a swapfile
 
         Args:
@@ -546,9 +537,9 @@ class SwapFile(Tool):
         """
         display_tool(self, self.state['console'], self.state['log'])
 
-        def run_command(command):
+        async def run_command(command):
 
-            output = ftl.run_module_sync(
+            output = await ftl.run_module(
                 self.state["inventory"],
                 self.state["modules"],
                 "command",
@@ -559,13 +550,12 @@ class SwapFile(Tool):
                     creates=location,
                 ),
                 dependencies=dependencies,
-                loop=self.state["loop"],
                 use_gate=self.state["gate"],
             )
 
             display_results(output, self.state['console'], self.state['log'])
 
-        run_command(f"dd if=/dev/zero of={location} bs={size} count={int(size * 1024)} &&"
+        await run_command(f"dd if=/dev/zero of={location} bs={size} count={int(size * 1024)} &&"
                     f"chmod 600 {location} &&"
                     f"mkswap {location} &&"
                     f"swapon {location}")
@@ -583,7 +573,7 @@ class Chown(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, user: str, location: str) -> bool:
+    async def forward(self, user: str, location: str) -> bool:
         """Changes the ownership of a directory and the files in it.
 
         Args:
@@ -595,7 +585,7 @@ class Chown(Tool):
         """
         display_tool(self, self.state['console'], self.state['log'])
 
-        output = ftl.run_module_sync(
+        output = await ftl.run_module(
             self.state["inventory"],
             self.state["modules"],
             "command",
@@ -605,7 +595,6 @@ class Chown(Tool):
                 _raw_params=f"chown -R {user} {location}",
             ),
             dependencies=dependencies,
-            loop=self.state["loop"],
             use_gate=self.state["gate"],
         )
 
@@ -623,7 +612,7 @@ class Copy(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, src: str, dest: str) -> bool:
+    async def forward(self, src: str, dest: str) -> bool:
         """Copy file to remote machine
 
         Args:
@@ -634,12 +623,11 @@ class Copy(Tool):
             boolean
         """
         display_tool(self, self.state['console'], self.state['log'])
-        ftl.copy_sync(
+        ftl.copy(
             self.state["inventory"],
             self.state["gate_cache"],
             src=src,
             dest=dest,
-            loop=self.state["loop"],
         )
 
         display_results({}, self.state['console'], self.state['log'])
@@ -656,7 +644,7 @@ class CopyFrom(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, src: str, dest: str) -> bool:
+    async def forward(self, src: str, dest: str) -> bool:
         """Copy file from remote machine locally
 
         Args:
@@ -667,12 +655,11 @@ class CopyFrom(Tool):
             boolean
         """
         display_tool(self, self.state['console'], self.state['log'])
-        ftl.copy_from_sync(
+        ftl.copy_from(
             self.state["inventory"],
             self.state["gate_cache"],
             src=src,
             dest=dest,
-            loop=self.state["loop"],
         )
 
         display_results({}, self.state['console'], self.state['log'])
@@ -689,7 +676,7 @@ class SystemDService(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, name: str, state: str = "started", enabled: bool = False) -> bool:
+    async def forward(self, name: str, state: str = "started", enabled: bool = False) -> bool:
         """Control systemd services
 
         Args:
@@ -701,14 +688,13 @@ class SystemDService(Tool):
             boolean
         """
         display_tool(self, self.state['console'], self.state['log'])
-        output = ftl.run_module_sync(
+        output = await ftl.run_module(
             self.state["inventory"],
             self.state["modules"],
             "systemd_service",
             self.state["gate_cache"],
             module_args=dict(name=name, state=state, enabled=enabled),
             dependencies=dependencies,
-            loop=self.state["loop"],
             use_gate=self.state["gate"],
         )
 
@@ -726,7 +712,7 @@ class GetURL(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, url: str, dest: str) -> bool:
+    async def forward(self, url: str, dest: str) -> bool:
         """Downloads a file
 
         Args:
@@ -737,7 +723,7 @@ class GetURL(Tool):
             boolean
         """
         display_tool(self, self.state['console'], self.state['log'])
-        output = ftl.run_module_sync(
+        output = await ftl.run_module(
             self.state["inventory"],
             self.state["modules"],
             "get_url",
@@ -746,7 +732,6 @@ class GetURL(Tool):
                 url=url,
                 dest=dest,
             ),
-            loop=self.state["loop"],
             use_gate=self.state["gate"],
         )
 
@@ -764,7 +749,7 @@ class Pip(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, name: str, state: str = "present") -> bool:
+    async def forward(self, name: str, state: str = "present") -> bool:
         """Control dnf packages
 
         Args:
@@ -775,14 +760,13 @@ class Pip(Tool):
             boolean
         """
         display_tool(self, self.state['console'], self.state['log'])
-        output = ftl.run_module_sync(
+        output = await ftl.run_module(
             self.state["inventory"],
             self.state["modules"],
             "pip",
             self.state["gate_cache"],
             module_args=dict(name=name, state=state),
             dependencies=dependencies,
-            loop=self.state["loop"],
             use_gate=self.state["gate"],
         )
 
