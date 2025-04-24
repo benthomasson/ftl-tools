@@ -39,7 +39,7 @@ def display_tool(tool, console, log):
 
 def display_results(output, console, log):
     if log is None:
-        pprint(output, console=console)
+        #pprint(output, console=console)
         for name, results in output.items():
             if results.get("failed"):
                 raise Exception(results.get("msg"))
@@ -50,7 +50,7 @@ def display_results(output, console, log):
         console.print("")
         console.print_json(json.dumps(output))
     else:
-        log.write(output)
+        #log.write(output)
         for name, results in output.items():
             if results.get("failed"):
                 raise Exception(results.get("msg"))
@@ -59,7 +59,7 @@ def display_results(output, console, log):
             else:
                 log.write(f"[green] ok: [{name}]")
         log.write("")
-        log.write(json.dumps(output))
+        log.write(output)
 
 
 class Service(Tool):
@@ -485,7 +485,7 @@ class Linode(Tool):
         new_linode = client.linode.instance_create(
             ltype="g6-nanode-1",
             region="us-southeast",
-            image="linode/fedora40",
+            image="private/31507384",
             label=name,
             root_pass=root_pass,
             authorized_users=["benthomasson"],
@@ -599,6 +599,36 @@ class Chown(Tool):
         )
 
         display_results(output, self.state['console'], self.state['log'])
+
+        return True
+
+    description, inputs, output_type = get_json_schema(forward)
+
+
+class Mkdir(Tool):
+    name = "mkdir"
+
+    def __init__(self, state, *args, **kwargs):
+        self.state = state
+        super().__init__(*args, **kwargs)
+
+    async def forward(self, src: str, dest: str) -> bool:
+        """Make a directory on the remote machine
+
+        Args:
+            name: The name of the directory
+
+        Returns:
+            boolean
+        """
+        display_tool(self, self.state['console'], self.state['log'])
+        ftl.mkdir(
+            self.state["inventory"],
+            self.state["gate_cache"],
+            name=name,
+        )
+
+        display_results({}, self.state['console'], self.state['log'])
 
         return True
 

@@ -4,13 +4,11 @@ from ftlagents.tools import get_json_schema
 
 import os
 import faster_than_light as ftl
-import shutil
 import logging
 import yaml
 import json
 from linode_api4 import LinodeClient
 
-from rich.console import Console
 from rich.pretty import pprint
 
 from ftl_automation_agent import console
@@ -24,6 +22,7 @@ dependencies = [
     "ftl_collections @ git+https://github.com/benthomasson/ftl_collections@main",
 ]
 
+
 def write_or_print(output, console, log):
 
     if log is None:
@@ -33,7 +32,11 @@ def write_or_print(output, console, log):
 
 
 def display_tool(tool, console, log):
-    write_or_print(Rule(title=f"\n[green]TOOL [white]\[{tool.name}]", align="left"), console, log)
+    write_or_print(
+        Rule(title=f"\n[green]TOOL [white]\[{tool.name}]", align="left"),  # noqa: W605
+        console,
+        log,
+    )
 
 
 def display_results(output, console, log):
@@ -79,7 +82,7 @@ class Service(Tool):
         Returns:
             boolean
         """
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
 
         output = ftl.run_module_sync(
             self.state["inventory"],
@@ -92,7 +95,7 @@ class Service(Tool):
             use_gate=self.state["gate"],
         )
 
-        display_results(output, self.state['console'], self.state['log'])
+        display_results(output, self.state["console"], self.state["log"])
 
         return True
 
@@ -121,7 +124,7 @@ class LineInFile(Tool):
         Returns:
             boolean
         """
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
         output = ftl.run_module_sync(
             self.state["inventory"],
             self.state["modules"],
@@ -133,7 +136,7 @@ class LineInFile(Tool):
             use_gate=self.state["gate"],
         )
 
-        display_results(output, self.state['console'], self.state['log'])
+        display_results(output, self.state["console"], self.state["log"])
 
         return True
 
@@ -159,7 +162,7 @@ class AuthorizedKey(Tool):
         Returns:
             boolean
         """
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
         key = os.path.abspath(os.path.expanduser(key))
         if not os.path.exists(key) or not os.path.isfile(key):
             raise Exception(f"{key} does not exist")
@@ -176,7 +179,7 @@ class AuthorizedKey(Tool):
             use_gate=self.state["gate"],
         )
 
-        display_results(output, self.state['console'], self.state['log'])
+        display_results(output, self.state["console"], self.state["log"])
 
         return True
 
@@ -201,7 +204,7 @@ class User(Tool):
         Returns:
             boolean
         """
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
         output = ftl.run_module_sync(
             self.state["inventory"],
             self.state["modules"],
@@ -217,7 +220,7 @@ class User(Tool):
             use_gate=self.state["gate"],
         )
 
-        display_results(output, self.state['console'], self.state['log'])
+        display_results(output, self.state["console"], self.state["log"])
 
         return True
 
@@ -242,7 +245,7 @@ class Dnf(Tool):
         Returns:
             boolean
         """
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
         output = ftl.run_module_sync(
             self.state["inventory"],
             self.state["modules"],
@@ -254,7 +257,7 @@ class Dnf(Tool):
             use_gate=self.state["gate"],
         )
 
-        display_results(output, self.state['console'], self.state['log'])
+        display_results(output, self.state["console"], self.state["log"])
 
         return True
 
@@ -279,7 +282,7 @@ class Apt(Tool):
         Returns:
             boolean
         """
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
         output = ftl.run_module_sync(
             self.state["inventory"],
             self.state["modules"],
@@ -291,7 +294,7 @@ class Apt(Tool):
             use_gate=self.state["gate"],
         )
 
-        display_results(output, self.state['console'], self.state['log'])
+        display_results(output, self.state["console"], self.state["log"])
 
         return True
 
@@ -315,7 +318,7 @@ class Hostname(Tool):
         Returns:
             boolean
         """
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
         output = ftl.run_module_sync(
             self.state["inventory"],
             self.state["modules"],
@@ -327,7 +330,7 @@ class Hostname(Tool):
             use_gate=self.state["gate"],
         )
 
-        display_results(output, self.state['console'], self.state['log'])
+        display_results(output, self.state["console"], self.state["log"])
 
         return True
 
@@ -350,7 +353,7 @@ class Slack(Tool):
         Returns:
             boolean
         """
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
         output = ftl.run_module_sync(
             self.state["localhost"],
             self.state["modules"],
@@ -361,7 +364,7 @@ class Slack(Tool):
             use_gate=self.state["gate"],
         )
 
-        display_results(output, self.state['console'], self.state['log'])
+        display_results(output, self.state["console"], self.state["log"])
 
         return True
 
@@ -384,7 +387,7 @@ class Discord(Tool):
         Returns:
             boolean
         """
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
         output = ftl.run_module_sync(
             self.state["localhost"],
             self.state["modules"],
@@ -399,7 +402,7 @@ class Discord(Tool):
             use_gate=self.state["gate"],
         )
 
-        display_results(output, self.state['console'], self.state['log'])
+        display_results(output, self.state["console"], self.state["log"])
 
         return True
 
@@ -432,7 +435,7 @@ class FirewallD(Tool):
             pass
         else:
             port = f"{port}/tcp"
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
         output = ftl.run_module_sync(
             self.state["inventory"],
             self.state["modules"],
@@ -448,7 +451,7 @@ class FirewallD(Tool):
             use_gate=self.state["gate"],
         )
 
-        display_results(output, self.state['console'], self.state['log'])
+        display_results(output, self.state["console"], self.state["log"])
 
         return True
 
@@ -472,7 +475,7 @@ class Linode(Tool):
         Returns:
             boolean
         """
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
 
         pprint(self.state["inventory"], console=console)
 
@@ -544,7 +547,7 @@ class SwapFile(Tool):
         Returns:
             boolean
         """
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
 
         def run_command(command):
 
@@ -563,12 +566,14 @@ class SwapFile(Tool):
                 use_gate=self.state["gate"],
             )
 
-            display_results(output, self.state['console'], self.state['log'])
+            display_results(output, self.state["console"], self.state["log"])
 
-        run_command(f"dd if=/dev/zero of={location} bs={size} count={int(size * 1024)} &&"
-                    f"chmod 600 {location} &&"
-                    f"mkswap {location} &&"
-                    f"swapon {location}")
+        run_command(
+            f"dd if=/dev/zero of={location} bs={size} count={int(size * 1024)} &&"
+            f"chmod 600 {location} &&"
+            f"mkswap {location} &&"
+            f"swapon {location}"
+        )
 
         return True
 
@@ -588,12 +593,12 @@ class Chown(Tool):
 
         Args:
             location: The location of the swapfile
-            user: The size of the swapfile
+            user: The new owner of the location
 
         Returns:
             boolean
         """
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
 
         output = ftl.run_module_sync(
             self.state["inventory"],
@@ -609,7 +614,79 @@ class Chown(Tool):
             use_gate=self.state["gate"],
         )
 
-        display_results(output, self.state['console'], self.state['log'])
+        display_results(output, self.state["console"], self.state["log"])
+
+        return True
+
+    description, inputs, output_type = get_json_schema(forward)
+
+
+class Chmod(Tool):
+    name = "chmod"
+    module = "command"
+
+    def __init__(self, state, *args, **kwargs):
+        self.state = state
+        super().__init__(*args, **kwargs)
+
+    def forward(self, permissions: str, location: str) -> bool:
+        """Changes the permissions of a file or directory.
+
+        Args:
+            location: The location of the swapfile
+            permissions: The size of the swapfile
+
+        Returns:
+            boolean
+        """
+        display_tool(self, self.state["console"], self.state["log"])
+
+        output = ftl.run_module_sync(
+            self.state["inventory"],
+            self.state["modules"],
+            "command",
+            self.state["gate_cache"],
+            module_args=dict(
+                _uses_shell=True,
+                _raw_params=f"chmod {permissions} {location}",
+            ),
+            dependencies=dependencies,
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
+
+        display_results(output, self.state["console"], self.state["log"])
+
+        return True
+
+    description, inputs, output_type = get_json_schema(forward)
+
+
+class Mkdir(Tool):
+    name = "mkdir"
+
+    def __init__(self, state, *args, **kwargs):
+        self.state = state
+        super().__init__(*args, **kwargs)
+
+    def forward(self, name: str) -> bool:
+        """Make a directory on the remote machine
+
+        Args:
+            name: The name of the directory
+
+        Returns:
+            boolean
+        """
+        display_tool(self, self.state["console"], self.state["log"])
+        ftl.mkdir_sync(
+            self.state["inventory"],
+            self.state["gate_cache"],
+            name=name,
+            loop=self.state["loop"],
+        )
+
+        display_results({}, self.state["console"], self.state["log"])
 
         return True
 
@@ -633,7 +710,7 @@ class Copy(Tool):
         Returns:
             boolean
         """
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
         ftl.copy_sync(
             self.state["inventory"],
             self.state["gate_cache"],
@@ -642,7 +719,7 @@ class Copy(Tool):
             loop=self.state["loop"],
         )
 
-        display_results({}, self.state['console'], self.state['log'])
+        display_results({}, self.state["console"], self.state["log"])
 
         return True
 
@@ -666,7 +743,7 @@ class CopyFrom(Tool):
         Returns:
             boolean
         """
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
         ftl.copy_from_sync(
             self.state["inventory"],
             self.state["gate_cache"],
@@ -675,7 +752,7 @@ class CopyFrom(Tool):
             loop=self.state["loop"],
         )
 
-        display_results({}, self.state['console'], self.state['log'])
+        display_results({}, self.state["console"], self.state["log"])
 
         return True
 
@@ -700,7 +777,7 @@ class SystemDService(Tool):
         Returns:
             boolean
         """
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
         output = ftl.run_module_sync(
             self.state["inventory"],
             self.state["modules"],
@@ -712,7 +789,7 @@ class SystemDService(Tool):
             use_gate=self.state["gate"],
         )
 
-        display_results(output, self.state['console'], self.state['log'])
+        display_results(output, self.state["console"], self.state["log"])
 
         return True
 
@@ -736,7 +813,7 @@ class GetURL(Tool):
         Returns:
             boolean
         """
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
         output = ftl.run_module_sync(
             self.state["inventory"],
             self.state["modules"],
@@ -750,7 +827,7 @@ class GetURL(Tool):
             use_gate=self.state["gate"],
         )
 
-        display_results(output, self.state['console'], self.state['log'])
+        display_results(output, self.state["console"], self.state["log"])
 
         return True
 
@@ -774,7 +851,7 @@ class Pip(Tool):
         Returns:
             boolean
         """
-        display_tool(self, self.state['console'], self.state['log'])
+        display_tool(self, self.state["console"], self.state["log"])
         output = ftl.run_module_sync(
             self.state["inventory"],
             self.state["modules"],
@@ -786,7 +863,43 @@ class Pip(Tool):
             use_gate=self.state["gate"],
         )
 
-        display_results(output, self.state['console'], self.state['log'])
+        display_results(output, self.state["console"], self.state["log"])
+
+        return True
+
+    description, inputs, output_type = get_json_schema(forward)
+
+
+class Unarchive(Tool):
+    name = "unarchive"
+
+    def __init__(self, state, *args, **kwargs):
+        self.state = state
+        super().__init__(*args, **kwargs)
+
+    def forward(self, src: str, dest: str) -> bool:
+        """Unarchives files from the archive file to the destination directory.
+
+        Args:
+            src: the name of the archive
+            dest: the destination of the unarchived files
+
+        Returns:
+            boolean
+        """
+        display_tool(self, self.state["console"], self.state["log"])
+        output = ftl.run_module_sync(
+            self.state["inventory"],
+            self.state["modules"],
+            "unarchive",
+            self.state["gate_cache"],
+            module_args=dict(src=src, dest=dest, remote_src=True),
+            dependencies=dependencies,
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
+
+        display_results(output, self.state["console"], self.state["log"])
 
         return True
 
@@ -807,11 +920,14 @@ __all__ = [
     "FirewallD",
     "SwapFile",
     "Chown",
+    "Chmod",
     "Copy",
     "CopyFrom",
     "SystemDService",
     "GetURL",
     "Pip",
+    "Unarchive",
+    "Mkdir",
 ]
 
 
