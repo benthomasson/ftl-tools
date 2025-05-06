@@ -21,7 +21,7 @@ logger = logging.getLogger("tools")
 
 dependencies = [
     "ftl_module_utils @ git+https://github.com/benthomasson/ftl_module_utils@main",
-    "ftl_collections @ git+https://github.com/benthomasson/ftl_collections@main",
+    "ftl_collections @ git+https://github.com/benthomasson/ftl-collections@main",
 ]
 
 
@@ -485,7 +485,7 @@ class Linode(Tool):
         new_linode = client.linode.instance_create(
             ltype="g6-nanode-1",
             region="us-southeast",
-            image="private/31507384",
+            image="private/31658563",
             label=name,
             root_pass=root_pass,
             authorized_users=["benthomasson"],
@@ -612,7 +612,7 @@ class Mkdir(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    async def forward(self, src: str, dest: str) -> bool:
+    async def forward(self, name: str) -> bool:
         """Make a directory on the remote machine
 
         Args:

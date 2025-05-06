@@ -14,6 +14,8 @@ from rich.pretty import pprint
 from ftl_automation_agent import console
 from rich.rule import Rule
 
+from ftl_tools.utils import dependencies, display_results, display_tool
+
 
 logger = logging.getLogger("tools")
 
@@ -33,7 +35,7 @@ def write_or_print(output, console, log):
 
 def display_tool(tool, console, log):
     write_or_print(
-        Rule(title=f"\n[green]TOOL [white]\[{tool.name}]", align="left"),  # noqa: W605
+        Rule(title=f"\n[green]TOOL [white] [ {tool.name} ]", align="left"),  # noqa: W605
         console,
         log,
     )
@@ -339,6 +341,7 @@ class Hostname(Tool):
 
 class Slack(Tool):
     name = "slack"
+    module = "slack"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
