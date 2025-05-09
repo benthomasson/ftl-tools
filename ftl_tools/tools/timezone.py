@@ -5,7 +5,7 @@ from ftl_tools.utils import dependencies, display_results, display_tool
 
 
 class Timezone(Tool):
-    name = "timezone"
+    name = "timezone_tool"
     module = "timezone"
 
     def __init__(self, state, *args, **kwargs):

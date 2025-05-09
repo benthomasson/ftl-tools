@@ -23,7 +23,7 @@ logger = logging.getLogger("tools")
 
 
 class Service(Tool):
-    name = "service"
+    name = "service_tool"
     module = "service"
 
     def __init__(self, state, *args, **kwargs):
@@ -61,7 +61,7 @@ class Service(Tool):
 
 
 class LineInFile(Tool):
-    name = "lineinfile"
+    name = "lineinfile_tool"
     module = "lineinfile"
 
     def __init__(self, state, *args, **kwargs):
@@ -102,7 +102,7 @@ class LineInFile(Tool):
 
 
 class AuthorizedKey(Tool):
-    name = "authorized_key"
+    name = "authorized_key_tool"
     module = "authorized_key"
 
     def __init__(self, state, *args, **kwargs):
@@ -145,7 +145,7 @@ class AuthorizedKey(Tool):
 
 
 class User(Tool):
-    name = "user"
+    name = "user_tool"
     module = "user"
 
     def __init__(self, state, *args, **kwargs):
@@ -186,7 +186,7 @@ class User(Tool):
 
 
 class Dnf(Tool):
-    name = "dnf"
+    name = "dnf_tool"
     module = "dnf"
 
     def __init__(self, state, *args, **kwargs):
@@ -223,7 +223,7 @@ class Dnf(Tool):
 
 
 class Apt(Tool):
-    name = "apt"
+    name = "apt_tool"
     module = "apt"
 
     def __init__(self, state, *args, **kwargs):
@@ -260,7 +260,7 @@ class Apt(Tool):
 
 
 class Hostname(Tool):
-    name = "hostname"
+    name = "hostname_tool"
     module = "hostname"
 
     def __init__(self, state, *args, **kwargs):
@@ -296,7 +296,7 @@ class Hostname(Tool):
 
 
 class Slack(Tool):
-    name = "slack"
+    name = "slack_tool"
     module = "slack"
 
     def __init__(self, state, *args, **kwargs):
@@ -331,7 +331,7 @@ class Slack(Tool):
 
 
 class Discord(Tool):
-    name = "discord"
+    name = "discord_tool"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
@@ -369,7 +369,7 @@ class Discord(Tool):
 
 
 class FirewallD(Tool):
-    name = "firewalld"
+    name = "firewalld_tool"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
@@ -425,7 +425,7 @@ class FirewallD(Tool):
 
 
 class Linode(Tool):
-    name = "linode"
+    name = "linode_tool"
     module = None
 
     def __init__(self, state, *args, **kwargs):
@@ -497,7 +497,7 @@ class Linode(Tool):
 
 
 class SwapFile(Tool):
-    name = "swapfile"
+    name = "swapfile_tool"
     module = "command"
 
     def __init__(self, state, *args, **kwargs):
@@ -549,7 +549,7 @@ class SwapFile(Tool):
 
 
 class Chown(Tool):
-    name = "chown"
+    name = "chown_tool"
     module = "command"
 
     def __init__(self, state, *args, **kwargs):
@@ -590,7 +590,7 @@ class Chown(Tool):
 
 
 class Chmod(Tool):
-    name = "chmod"
+    name = "chmod_tool"
     module = "command"
 
     def __init__(self, state, *args, **kwargs):
@@ -631,7 +631,7 @@ class Chmod(Tool):
 
 
 class Mkdir(Tool):
-    name = "mkdir"
+    name = "mkdir_tool"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
@@ -662,7 +662,7 @@ class Mkdir(Tool):
 
 
 class Copy(Tool):
-    name = "copy"
+    name = "copy_tool"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
@@ -695,7 +695,7 @@ class Copy(Tool):
 
 
 class CopyFrom(Tool):
-    name = "copy_from"
+    name = "copy_from_tool"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
@@ -728,7 +728,7 @@ class CopyFrom(Tool):
 
 
 class SystemDService(Tool):
-    name = "systemd_service"
+    name = "systemd_service_tool"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
@@ -765,7 +765,7 @@ class SystemDService(Tool):
 
 
 class GetURL(Tool):
-    name = "get_url"
+    name = "get_url_tool"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
@@ -803,7 +803,7 @@ class GetURL(Tool):
 
 
 class Pip(Tool):
-    name = "pip"
+    name = "pip_tool"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
@@ -839,7 +839,7 @@ class Pip(Tool):
 
 
 class Unarchive(Tool):
-    name = "unarchive"
+    name = "unarchive_tool"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
@@ -875,7 +875,7 @@ class Unarchive(Tool):
 
 
 class JavaJar(Tool):
-    name = "java_jar"
+    name = "java_jar_tool"
     module = "command"
 
     def __init__(self, state, *args, **kwargs):
