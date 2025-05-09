@@ -375,25 +375,32 @@ class FirewallD(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, port: str, state: str, permanent: bool) -> bool:
+    def forward(self, port: str, state: str, protocol: str=None, permanent: bool=True) -> bool:
         """Configure firewalld
 
         Args:
-            port: The port/protocol like 8081/tcp
+            port: The port to control
             state: One of enabled or disabled
+            protocol: tcp or udp
             permanent: True if permanent
 
         Returns:
             boolean
         """
         if isinstance(port, int):
-            port = f"{port}/tcp"
+            if protocol:
+                port = f"{port}/{protocol}"
+            else:
+                port = f"{port}/tcp"
         elif port.endswith("/tcp"):
             pass
         elif port.endswith("/udp"):
             pass
         else:
-            port = f"{port}/tcp"
+            if protocol:
+                port = f"{port}/{protocol}"
+            else:
+                port = f"{port}/tcp"
         display_tool(self, self.state["console"], self.state["log"])
         output = ftl.run_module_sync(
             self.state["inventory"],
@@ -894,7 +901,7 @@ class JavaJar(Tool):
             self.state["gate_cache"],
             module_args=dict(
                 _uses_shell=True,
-                _raw_params=f"java -jar {jar} {" ".join(args)}",
+                _raw_params=f"java -jar {jar} {' '.join(args)}",
             ),
             dependencies=dependencies,
             loop=self.state["loop"],

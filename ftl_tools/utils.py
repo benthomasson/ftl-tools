@@ -7,7 +7,7 @@ from rich.rule import Rule
 
 dependencies = [
     "ftl_module_utils @ git+https://github.com/benthomasson/ftl_module_utils@main",
-    "ftl_collections @ git+https://github.com/benthomasson/ftl_collections@main",
+    "ftl_collections @ git+https://github.com/benthomasson/ftl-collections@main",
 ]
 
 
