@@ -8,7 +8,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["ftl_tools"]
+packages = ["ftl_tools", "ftl_tools.tools"]
 
 [build-system]
 requires = ["setuptools"]
