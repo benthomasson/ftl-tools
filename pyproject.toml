@@ -5,6 +5,7 @@ dependencies = [
     "smolagents[litellm]==1.9.2",
     "ftlagents",
     "rich",
+    "linode_api4",
 ]
 
 [tool.setuptools.packages]
