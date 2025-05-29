@@ -7,8 +7,8 @@ dependencies = [
     "rich",
 ]
 
-[tool.setuptools]
-packages = ["ftl_tools", "ftl_tools.tools"]
+[tool.setuptools.packages]
+find = {}
 
 [build-system]
 requires = ["setuptools"]
