@@ -6,17 +6,16 @@ import os
 import faster_than_light as ftl
 import logging
 import yaml
-import json
 from linode_api4 import LinodeClient
 
 from rich.pretty import pprint
 
 from ftl_automation_agent import console
-from rich.rule import Rule
 
 from ftl_tools.utils import dependencies, display_results, display_tool
 
 from .timezone import Timezone
+from .git import Git
 
 
 logger = logging.getLogger("tools")
@@ -375,7 +374,9 @@ class FirewallD(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, port: str, state: str, protocol: str=None, permanent: bool=True) -> bool:
+    def forward(
+        self, port: str, state: str, protocol: str = None, permanent: bool = True
+    ) -> bool:
         """Configure firewalld
 
         Args:
@@ -432,7 +433,9 @@ class Linode(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, name: str, image: str = "linode/fedora40", ltype: str = "g6-nanode-1") -> bool:
+    def forward(
+        self, name: str, image: str = "linode/fedora40", ltype: str = "g6-nanode-1"
+    ) -> bool:
         """Provisions a new linode server
 
         Args:
@@ -804,13 +807,14 @@ class GetURL(Tool):
 
 class Pip(Tool):
     name = "pip_tool"
+    module = "pip"
 
     def __init__(self, state, *args, **kwargs):
         self.state = state
         super().__init__(*args, **kwargs)
 
     def forward(self, name: str, state: str = "present") -> bool:
-        """Control dnf packages
+        """Install python packages using pip
 
         Args:
             name: the name of the package
@@ -826,6 +830,42 @@ class Pip(Tool):
             "pip",
             self.state["gate_cache"],
             module_args=dict(name=name, state=state),
+            dependencies=dependencies,
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
+
+        display_results(output, self.state["console"], self.state["log"])
+
+        return True
+
+    description, inputs, output_type = get_json_schema(forward)
+
+
+class PipRequirements(Tool):
+    name = "pip_requirements_tool"
+    module = "pip"
+
+    def __init__(self, state, *args, **kwargs):
+        self.state = state
+        super().__init__(*args, **kwargs)
+
+    def forward(self, requirements: str) -> bool:
+        """Install dependencies from python requirements.txt files using pip.
+
+        Args:
+            requirements: the path to the requirements.txt file
+
+        Returns:
+            boolean
+        """
+        display_tool(self, self.state["console"], self.state["log"])
+        output = ftl.run_module_sync(
+            self.state["inventory"],
+            self.state["modules"],
+            "pip",
+            self.state["gate_cache"],
+            module_args=dict(requirements=requirements),
             dependencies=dependencies,
             loop=self.state["loop"],
             use_gate=self.state["gate"],
@@ -915,6 +955,46 @@ class JavaJar(Tool):
     description, inputs, output_type = get_json_schema(forward)
 
 
+class Bash(Tool):
+    name = "bash_tool"
+    module = "command"
+
+    def __init__(self, state, *args, **kwargs):
+        self.state = state
+        super().__init__(*args, **kwargs)
+
+    def forward(self, script: str, user: str) -> bool:
+        """Run a bash script
+
+        Args:
+            script: the path of the script to run
+            user: the user to run the scrip as
+
+        Returns:
+            boolean
+        """
+        display_tool(self, self.state["console"], self.state["log"])
+
+        output = ftl.run_module_sync(
+            self.state["inventory"],
+            self.state["modules"],
+            "command",
+            self.state["gate_cache"],
+            module_args=dict(
+                _uses_shell=True, _raw_params=f"sudo -u {user} bash {script}"
+            ),
+            dependencies=dependencies,
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
+
+        display_results(output, self.state["console"], self.state["log"])
+
+        return True
+
+    description, inputs, output_type = get_json_schema(forward)
+
+
 __all__ = [
     "Service",
     "LineInFile",
@@ -935,10 +1015,13 @@ __all__ = [
     "SystemDService",
     "GetURL",
     "Pip",
+    "PipRequirements",
     "Unarchive",
     "Mkdir",
     "JavaJar",
+    "Bash",
     "Timezone",
+    "Git",
 ]
 
 

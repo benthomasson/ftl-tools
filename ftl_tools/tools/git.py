@@ -5,7 +5,7 @@ from ftl_tools.utils import dependencies, display_results, display_tool
 
 
 class Git(Tool):
-    name = "git"
+    name = "git_tool"
     module = "git"
 
     def __init__(self, state, *args, **kwargs):
