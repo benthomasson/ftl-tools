@@ -16,6 +16,7 @@ from ftl_tools.utils import dependencies, display_results, display_tool
 
 from .timezone import Timezone
 from .git import Git
+from .podman import PodmanVersion, PodmanRun, PodmanPull
 
 
 logger = logging.getLogger("tools")
@@ -850,11 +851,12 @@ class PipRequirements(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, requirements: str) -> bool:
+    def forward(self, requirements: str, venv: str) -> bool:
         """Install dependencies from python requirements.txt files using pip.
 
         Args:
             requirements: the path to the requirements.txt file
+            venv: the path to the virtual environment to install the packages to
 
         Returns:
             boolean
@@ -865,7 +867,7 @@ class PipRequirements(Tool):
             self.state["modules"],
             "pip",
             self.state["gate_cache"],
-            module_args=dict(requirements=requirements),
+            module_args=dict(requirements=requirements, virtualenv=venv, virtualenv_command="python3 -m venv"),
             dependencies=dependencies,
             loop=self.state["loop"],
             use_gate=self.state["gate"],
@@ -1022,18 +1024,7 @@ __all__ = [
     "Bash",
     "Timezone",
     "Git",
+    "PodmanPull",
+    "PodmanVersion",
+    "PodmanRun",
 ]
-
-
-if __name__ == "__main__":
-    import sys
-    import inspect
-
-    print("Tools")
-    for name, obj in inspect.getmembers(sys.modules[__name__]):
-        if inspect.isclass(obj):
-            if obj == Tool:
-                continue
-            tool = obj
-            description, inputs, output_type = get_json_schema(tool.forward)
-            print(f"* {tool.name} - {description}")
