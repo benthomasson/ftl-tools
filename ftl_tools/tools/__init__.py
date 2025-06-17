@@ -686,7 +686,7 @@ class Copy(Tool):
             boolean
         """
         display_tool(self, self.state["console"], self.state["log"])
-        ftl.copy_sync(
+        output = ftl.copy_sync(
             self.state["inventory"],
             self.state["gate_cache"],
             src=src,
@@ -696,7 +696,7 @@ class Copy(Tool):
 
         display_results({}, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
