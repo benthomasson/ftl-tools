@@ -55,7 +55,7 @@ class Service(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -96,7 +96,7 @@ class LineInFile(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -139,7 +139,7 @@ class AuthorizedKey(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -180,7 +180,7 @@ class User(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -217,7 +217,7 @@ class Dnf(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -254,7 +254,7 @@ class Apt(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -290,7 +290,7 @@ class Hostname(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -325,7 +325,7 @@ class Slack(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -363,7 +363,7 @@ class Discord(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -421,7 +421,7 @@ class FirewallD(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -540,14 +540,17 @@ class SwapFile(Tool):
 
             display_results(output, self.state["console"], self.state["log"])
 
-        run_command(
+            return output
+
+        output = run_command(
             f"dd if=/dev/zero of={location} bs={size} count={int(size * 1024)} &&"
             f"chmod 600 {location} &&"
             f"mkswap {location} &&"
             f"swapon {location}"
         )
 
-        return True
+        return output
+
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -588,7 +591,7 @@ class Chown(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -629,7 +632,7 @@ class Chmod(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -763,7 +766,7 @@ class SystemDService(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -801,7 +804,7 @@ class GetURL(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -838,7 +841,7 @@ class Pip(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -875,7 +878,7 @@ class PipRequirements(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -911,7 +914,7 @@ class Unarchive(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -952,7 +955,7 @@ class JavaJar(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
@@ -992,7 +995,7 @@ class Bash(Tool):
 
         display_results(output, self.state["console"], self.state["log"])
 
-        return True
+        return output
 
     description, inputs, output_type = get_json_schema(forward)
 
