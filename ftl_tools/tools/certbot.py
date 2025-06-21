@@ -12,11 +12,12 @@ class Certbot(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, server_name: str) -> bool:
+    def forward(self, server_name: str, email: str) -> bool:
         """Configures SSL certificates using certbot for nginx
 
         Args:
             server_name: The name of server to configure SSL certificates for.
+            email: The email address to register with
 
         Returns:
             boolean
@@ -30,7 +31,7 @@ class Certbot(Tool):
             self.state["gate_cache"],
             module_args=dict(
                 _uses_shell=True,
-                _raw_params=f"certbot --nginx -n -d {server_name}",
+                _raw_params=f"certbot --nginx -n -d {server_name} --agree-tos --email {email}",
             ),
             dependencies=dependencies,
             loop=self.state["loop"],
