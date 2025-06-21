@@ -18,6 +18,7 @@ from .timezone import Timezone
 from .git import Git
 from .podman import PodmanVersion, PodmanRun, PodmanPull
 from .certbot import Certbot
+from .setsebool import SetSeBool
 
 
 logger = logging.getLogger("tools")
@@ -1116,4 +1117,5 @@ __all__ = [
     "PodmanVersion",
     "PodmanRun",
     "Certbot",
+    "SetSeBool",
 ]
