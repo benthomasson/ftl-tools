@@ -19,7 +19,7 @@ from .git import Git
 from .podman import PodmanVersion, PodmanRun, PodmanPull
 from .certbot import Certbot
 from .setsebool import SetSeBool
-
+from .template import Template
 
 logger = logging.getLogger("tools")
 
@@ -1118,4 +1118,5 @@ __all__ = [
     "PodmanRun",
     "Certbot",
     "SetSeBool",
+    "Template",
 ]
