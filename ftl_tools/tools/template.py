@@ -31,7 +31,7 @@ class Template(Tool):
             return False
 
         display_tool(self, self.state["console"], self.state["log"])
-        output = ftl.copy_sync(
+        output = ftl.template_sync(
             self.state["inventory"],
             self.state["gate_cache"],
             src=src,
