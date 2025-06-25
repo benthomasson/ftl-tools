@@ -12,7 +12,7 @@ from rich.pretty import pprint
 
 from ftl_automation_agent import console
 
-from ftl_tools.utils import dependencies, display_results, display_tool
+from ftl_tools.utils import dependencies, display_results, display_tool, safe_join_path
 
 from .timezone import Timezone
 from .git import Git
@@ -765,11 +765,17 @@ class Copy(Tool):
         Returns:
             boolean
         """
+
+        src = safe_join_path(self.state["workspace"], src)
+
+        if src is None:
+            return False
+
         display_tool(self, self.state["console"], self.state["log"])
         output = ftl.copy_sync(
             self.state["inventory"],
             self.state["gate_cache"],
-            src=src,
+            src=safe_join_path(self.state["workspace"], src),
             dest=dest,
             loop=self.state["loop"],
         )
@@ -798,6 +804,12 @@ class CopyFrom(Tool):
         Returns:
             boolean
         """
+
+        dest = safe_join_path(self.state["workspace"], dest)
+
+        if dest is None:
+            return False
+
         display_tool(self, self.state["console"], self.state["log"])
         ftl.copy_from_sync(
             self.state["inventory"],

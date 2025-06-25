@@ -3,6 +3,7 @@ import json
 
 from rich.pretty import pprint
 from rich.rule import Rule
+from pathlib import Path
 
 
 dependencies = [
@@ -50,3 +51,15 @@ def display_results(output, console, log):
                 log.write(f"[green] ok: [{name}]")
         log.write("")
         log.write(json.dumps(output))
+
+
+def safe_join_path(a, b):
+
+    base = Path(a).resolve()
+    sub = Path(b)
+    combined = (base / sub).resolve()
+
+    if not str(combined).startswith(str(base)):
+        return None
+
+    return str(combined)
