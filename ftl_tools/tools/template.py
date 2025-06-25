@@ -13,13 +13,13 @@ class Template(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, src: str, dest: str, **kwargs: dict) -> bool:
-        """Template a local file and copy the result to a remote machine
+
+    def forward(self, src: str, dest: str) -> bool:
+        """Template a local file and copy the result to a remote machine.
 
         Args:
             src: The source of the template to be copied
             dest: The destination of the file
-            kwargs: Values to be inserted into the template
 
         Returns:
             boolean
