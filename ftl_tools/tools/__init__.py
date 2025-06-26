@@ -568,7 +568,7 @@ class Linode(Tool):
             self.state["inventory"]["all"]["hosts"] = {}
         self.state["inventory"]["all"]["hosts"][name] = host_data
 
-        with open("inventory.yml", "w") as f:
+        with open(self.state["inventory_file"], "w") as f:
             f.write(yaml.safe_dump(self.state["inventory"]))
 
         pprint(self.state["inventory"], console=console)
