@@ -399,7 +399,7 @@ class Slack(Tool):
             self.state["modules"],
             "slack",
             self.state["gate_cache"],
-            module_args=dict(msg=msg, token=self.state["secrets"]["SLACK_TOKEN"]),
+            module_args=dict(msg=msg, token=str(self.state["secrets"]["SLACK_TOKEN"])),
             loop=self.state["loop"],
             use_gate=self.state["gate"],
         )
@@ -435,7 +435,7 @@ class Discord(Tool):
             self.state["gate_cache"],
             module_args=dict(
                 content=message,
-                webhook_token=self.state["secrets"]["DISCORD_TOKEN"],
+                webhook_token=str(self.state["secrets"]["DISCORD_TOKEN"]),
                 webhook_id=self.state["discord_channel"],
             ),
             loop=self.state["loop"],
@@ -533,7 +533,7 @@ class Linode(Tool):
         pprint(self.state["inventory"], console=console)
 
         # Create a Linode API client
-        client = LinodeClient(self.state["secrets"]["LINODE_TOKEN"])
+        client = LinodeClient(str(self.state["secrets"]["LINODE_TOKEN"]))
         root_pass = self.state["secrets"]["LINODE_ROOT_PASS"]
 
         my_linodes = client.linode.instances()
@@ -549,7 +549,7 @@ class Linode(Tool):
             region="us-southeast",
             image=image,
             label=name,
-            root_pass=root_pass,
+            root_pass=str(root_pass),
             authorized_users=["benthomasson"],
         )
 

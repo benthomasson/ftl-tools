@@ -1,6 +1,6 @@
 [project]
 name = "ftl-tools"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
     "smolagents[litellm]==1.9.2",
     "ftlagents",
@@ -8,8 +8,8 @@ dependencies = [
     "linode_api4",
 ]
 
-[tool.setuptools.packages]
-find = {}
+[tool.setuptools]
+packages = ['ftl_tools', 'ftl_tools.tools']
 
 [build-system]
 requires = ["setuptools"]
