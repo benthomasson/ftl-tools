@@ -43,7 +43,11 @@ def load_module(module_path):
     return module
 
 @click.command()
-def main():
+@click.option('--modules-dir', default='modules', help='Directory containing module files to process')
+@click.option('--simple-args-config', type=click.Path(exists=True), help='JSON/YAML file containing simple args configuration')
+@click.option('--model', default='claude-sonnet-4-20250514', help='LLM model to use for code generation')
+@click.option('--output-dir', default='tools', help='Directory to save generated tool files')
+def main(modules_dir, simple_args_config, model, output_dir):
 
     SIMPLE_ARGS = {
         "slack": ["token", "msg"],
@@ -64,12 +68,20 @@ def main():
         "git": ["repo", "dest", "update"],
     }
 
+    # Load simple args configuration from file if provided
+    if simple_args_config:
+        import json
+        with open(simple_args_config, 'r') as f:
+            if simple_args_config.endswith('.json'):
+                SIMPLE_ARGS.update(json.load(f))
+            else:
+                SIMPLE_ARGS.update(yaml.safe_load(f))
 
-    for module_path in glob.glob("modules/*.py"):
+    for module_path in glob.glob(f"{modules_dir}/*.py"):
 
         module_name = os.path.splitext(os.path.basename(module_path))[0]
 
-        if os.path.exists(f"tools/{module_name}.py"):
+        if os.path.exists(f"{output_dir}/{module_name}.py"):
             continue
 
         if module_name in ["command", "__init__"]:
@@ -193,10 +205,9 @@ def main():
         print(system_prompt)
         print(prompt)
 
-        model = "claude-sonnet-4-20250514"
         max_tokens = 3000
         temperature = 0.0
-        output = f"tools/{module_name}.py"
+        output = f"{output_dir}/{module_name}.py"
 
         done = False
         while not done:
@@ -204,7 +215,11 @@ def main():
             response = litellm.completion(
                 model=model,
                 messages=[
-                    {"role": "system", "content": system_prompt},
+                    {
+                        "role": "system", 
+                        "content": system_prompt,
+                        "cache_control": {"type": "ephemeral"}
+                    },
                     {"role": "user", "content": prompt},
                 ],
                 #max_tokens=max_tokens,
@@ -228,6 +243,8 @@ def main():
                 continue
 
             if output:
+                # Ensure output directory exists
+                os.makedirs(output_dir, exist_ok=True)
                 with open(output, "w", encoding="utf-8") as f:
                     f.write(code)
                 print(f"✅ Code saved to {output}")
