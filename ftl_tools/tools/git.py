@@ -13,12 +13,12 @@ class Git(Tool):
         super().__init__(*args, **kwargs)
 
     def forward(self, repo: str, dest: str, update: bool = True) -> bool:
-        '''Deploy software from git checkouts
+        '''Deploy software (or files) from git checkouts
 
         Args:
-            repo: Git repository URL (git, SSH, or HTTP(S) protocol)
-            dest: Path where the repository should be checked out
-            update: Whether to retrieve new revisions from origin. Default is yes.
+            repo: git, SSH, or HTTP(S) protocol address of the git repository
+            dest: The path of where the repository should be checked out
+            update: If false, do not retrieve new revisions from the origin repository
 
         Returns:
             boolean

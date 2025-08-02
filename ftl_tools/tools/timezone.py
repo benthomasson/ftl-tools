@@ -16,7 +16,7 @@ class Timezone(Tool):
         '''Configure timezone setting
 
         Args:
-            name: Name of the timezone for the system clock.
+            name: Name of the timezone for the system clock
 
         Returns:
             boolean
