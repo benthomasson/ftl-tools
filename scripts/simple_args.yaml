@@ -1,0 +1,69 @@
+# Simple argument configurations for module tool generation
+# Each module lists the parameters to include in the generated tool interface
+
+slack:
+  - token
+  - msg
+
+service:
+  - name
+  - state
+
+lineinfile:
+  - line
+  - state
+  - path
+  - regexp
+
+authorized_key:
+  - user
+  - state
+  - key
+
+user:
+  - name
+  - group
+
+dnf:
+  - name
+  - state
+
+apt:
+  - update_cache
+  - upgrade
+
+hostname:
+  - name
+
+discord:
+  - content
+
+firewalld:
+  - port
+  - state
+  - permanent
+
+unarchive:
+  - src
+  - dest
+
+pip:
+  - name
+  - state
+
+get_url:
+  - url
+  - dest
+
+systemd_service:
+  - name
+  - state
+  - enabled
+
+timezone:
+  - name
+
+git:
+  - repo
+  - dest
+  - update

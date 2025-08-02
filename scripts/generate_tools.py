@@ -50,26 +50,14 @@ def load_module(module_path):
 @click.option('--module', multiple=True, help='Specific module(s) to generate (can be used multiple times)')
 def main(modules_dir, simple_args_config, model, output_dir, module):
 
-    SIMPLE_ARGS = {
-        "slack": ["token", "msg"],
-        "service": ["name", "state"],
-        "lineinfile": ["line", "state", "path", "regexp"],
-        "authorized_key": ["user", "state", "key"],
-        "user": ["name", "group"],
-        "dnf": ["name", "state"],
-        "apt": ["update_cache", "upgrade"],
-        "hostname": ["name"],
-        "discord": ["content"],
-        "firewalld": ["port", "state", "permanent"],
-        "unarchive": ["src", "dest"],
-        "pip": ["name", "state"],
-        "get_url": ["url", "dest"],
-        "systemd_service": ["name", "state", "enabled"],
-        "timezone": ["name"],
-        "git": ["repo", "dest", "update"],
-    }
+    # Load default simple args configuration
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    default_config_path = os.path.join(script_dir, 'simple_args.yaml')
+    
+    with open(default_config_path, 'r') as f:
+        SIMPLE_ARGS = yaml.safe_load(f)
 
-    # Load simple args configuration from file if provided
+    # Load additional simple args configuration from file if provided
     if simple_args_config:
         import json
         with open(simple_args_config, 'r') as f:
@@ -171,50 +159,47 @@ def main(modules_dir, simple_args_config, model, output_dir, module):
         temperature = 0.0
         output = f"{output_dir}/{module_name}.py"
 
-        done = False
-        while not done:
-            # Call the model
-            response = litellm.completion(
-                model=model,
-                messages=[
-                    {
-                        "role": "system", 
-                        "content": system_prompt,
-                        "cache_control": {"type": "ephemeral"}
-                    },
-                    {"role": "user", "content": prompt},
-                ],
-                #max_tokens=max_tokens,
-                temperature=temperature,
-                #num_ctx=8192,
-                #api_base="http://host.docker.internal:11434"
-            )
+        # Call the model
+        response = litellm.completion(
+            model=model,
+            messages=[
+                {
+                    "role": "system", 
+                    "content": system_prompt,
+                    "cache_control": {"type": "ephemeral"}
+                },
+                {"role": "user", "content": prompt},
+            ],
+            #max_tokens=max_tokens,
+            temperature=temperature,
+            #num_ctx=8192,
+            #api_base="http://host.docker.internal:11434"
+        )
 
-            generated_code = response["choices"][0]["message"]["content"]
-            print(generated_code)
-            code = parse_code_blobs(generated_code)
-            print("=" * 80)
-            print(f"{code=}")
-            print("=" * 80)
-            if not code:
-                continue
-            try:
-                ast.parse(code)
-            except SyntaxError as e:
-                print("Failed with syntax error", e)
-                continue
+        generated_code = response["choices"][0]["message"]["content"]
+        print(generated_code)
+        code = parse_code_blobs(generated_code)
+        print("=" * 80)
+        print("{code}")
+        print("=" * 80)
+        if not code:
+            continue
+        try:
+            ast.parse(code)
+        except SyntaxError as e:
+            print("Failed with syntax error", e)
+            continue
 
-            if output:
-                # Ensure output directory exists
-                os.makedirs(output_dir, exist_ok=True)
-                with open(output, "w", encoding="utf-8") as f:
-                    f.write(code)
-                print(f"✅ Code saved to {output}")
-                done = True
-            else:
-                print("Generated Code:\n")
-                print(code)
-                done = True
+        if output:
+            # Ensure output directory exists
+            os.makedirs(output_dir, exist_ok=True)
+            with open(output, "w", encoding="utf-8") as f:
+                f.write(code)
+            print(f"✅ Code saved to {output}")
+            done = True
+        else:
+            print("Generated Code:\n")
+            print(code)
 
 if __name__ == "__main__":
     main()
