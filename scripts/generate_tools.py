@@ -47,7 +47,8 @@ def load_module(module_path):
 @click.option('--simple-args-config', type=click.Path(exists=True), help='JSON/YAML file containing simple args configuration')
 @click.option('--model', default='claude-sonnet-4-20250514', help='LLM model to use for code generation')
 @click.option('--output-dir', default='tools', help='Directory to save generated tool files')
-def main(modules_dir, simple_args_config, model, output_dir):
+@click.option('--module', multiple=True, help='Specific module(s) to generate (can be used multiple times)')
+def main(modules_dir, simple_args_config, model, output_dir, module):
 
     SIMPLE_ARGS = {
         "slack": ["token", "msg"],
@@ -77,7 +78,21 @@ def main(modules_dir, simple_args_config, model, output_dir):
             else:
                 SIMPLE_ARGS.update(yaml.safe_load(f))
 
-    for module_path in glob.glob(f"{modules_dir}/*.py"):
+    # Get list of module paths to process
+    if module:
+        # Process only specified modules
+        module_paths = []
+        for mod_name in module:
+            mod_path = f"{modules_dir}/{mod_name}.py"
+            if os.path.exists(mod_path):
+                module_paths.append(mod_path)
+            else:
+                print(f"Warning: Module file {mod_path} not found")
+    else:
+        # Process all modules in directory
+        module_paths = glob.glob(f"{modules_dir}/*.py")
+
+    for module_path in module_paths:
 
         module_name = os.path.splitext(os.path.basename(module_path))[0]
 
@@ -139,63 +154,10 @@ def main(modules_dir, simple_args_config, model, output_dir):
 
         print(doc)
 
-        system_prompt = """You are a helpful code assistant. Use the following
-        template to make tool interfaces from modules:
-
-
-        ```python
-        from smolagents.tools import Tool
-        from ftlagents.tools import get_json_schema
-        import faster_than_light as ftl
-        from ftl_tools.utils import dependencies, display_results, display_tool
-
-
-        class ModuleName(Tool):
-            name = "module_name_tool"
-            module = "module_name"
-
-            def __init__(self, state, *args, **kwargs):
-                self.state = state
-                super().__init__(*args, **kwargs)
-
-            def forward(self, arg1: str, arg2: str) -> bool:
-                '''Module description
-
-                Args:
-                    arg1: argument 1 description
-                    arg2: argument 2 description
-
-                Returns:
-                    boolean
-                '''
-                display_tool(self, self.state["console"], self.state["log"])
-
-                output = ftl.run_module_sync(
-                    self.state["inventory"],
-                    self.state["modules"],
-                    self.module,
-                    self.state["gate_cache"],
-                    module_args=dict(arg1=arg1, arg2=arg2),
-                    dependencies=dependencies,
-                    loop=self.state["loop"],
-                    use_gate=self.state["gate"],
-                )
-
-                display_results(output, self.state["console"], self.state["log"])
-
-                return output
-
-            description, inputs, output_type = get_json_schema(forward)
-        ```
-
-
-        For the return value choose one of: string, boolean, integer, number, object, any, or null.
-        Do not include a description for the return value.
-
-        If the default is included for an argument, add the default to the forward function arguments.
-
-
-        """
+        # Load system prompt from external file
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(script_dir, 'tool_template_prompt.txt'), 'r') as f:
+            system_prompt = f.read()
 
         prompt = f"""Using this documentation for a automation module
         generate a tool interface.
