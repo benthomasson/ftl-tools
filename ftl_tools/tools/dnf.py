@@ -23,6 +23,24 @@ class Dnf(Tool):
             boolean
         """
         display_tool(self, self.state["console"], self.state["log"])
+
+        # Ensure that python3-dnf is install so the dnf module doesn't fail
+        output = ftl.run_module_sync(
+            self.state["inventory"],
+            self.state["modules"],
+            "command",
+            self.state["gate_cache"],
+            module_args=dict(
+                _uses_shell=True,
+                _raw_params=f"dnf install -y python3-dnf",
+            ),
+            dependencies=dependencies,
+            loop=self.state["loop"],
+            use_gate=self.state["gate"],
+        )
+
+        display_results(output, self.state["console"], self.state["log"])
+
         output = ftl.run_module_sync(
             self.state["inventory"],
             self.state["modules"],

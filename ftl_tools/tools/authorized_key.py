@@ -13,22 +13,22 @@ class AuthorizedKey(Tool):
         self.state = state
         super().__init__(*args, **kwargs)
 
-    def forward(self, user: str, key: str, state: str = "present") -> bool:
+    def forward(self, user: str, key_file: str, state: str = "present") -> bool:
         """Manage authorized keys and upload public keys to the remote node
 
         Args:
             user: the name of the user
             state: one of present or absent
-            key: the path to the file containing the public key
+            key_file: the path to the file containing the public key_file
 
         Returns:
             boolean
         """
         display_tool(self, self.state["console"], self.state["log"])
-        key = os.path.abspath(os.path.expanduser(key))
-        if not os.path.exists(key) or not os.path.isfile(key):
-            raise Exception(f"{key} does not exist")
-        with open(key) as f:
+        key_file = os.path.abspath(os.path.expanduser(key_file))
+        if not os.path.exists(key_file) or not os.path.isfile(key_file):
+            raise Exception(f"{key_file} does not exist")
+        with open(key_file) as f:
             key_value = f.read()
         output = ftl.run_module_sync(
             self.state["inventory"],
