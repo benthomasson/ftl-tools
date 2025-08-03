@@ -32,11 +32,10 @@ from .unarchive import Unarchive
 from .java_jar import JavaJar
 from .bash import Bash
 
-
 __all__ = [
     "Service",
     "LineInFile",
-    "AddLineToFile", 
+    "AddLineToFile",
     "ReplaceLineInFile",
     "AuthorizedKey",
     "User",
