@@ -2,10 +2,11 @@
 name = "ftl-tools"
 version = "0.2.0"
 dependencies = [
-    "smolagents[litellm]==1.9.2",
-    "ftlagents",
+    "faster_than_light",
     "rich",
     "linode_api4",
+    "click",
+    "pyyaml",
 ]
 
 [tool.setuptools]
