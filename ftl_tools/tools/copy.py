@@ -1,20 +1,16 @@
 #!/usr/bin/env python3
-from smolagents.tools import Tool
-from ftlagents.tools import get_json_schema
-
 import faster_than_light as ftl
 
+from ftl_automation import AutomationTool
 from ftl_tools.utils import display_results, display_tool, safe_join_path
 
 
-class Copy(Tool):
-    name = "copy_tool"
+class Copy(AutomationTool):
+    name = "copy"
+    module = None  # Uses ftl.copy_sync directly, not a module
+    description = "Copy file to remote machine"
 
-    def __init__(self, state, *args, **kwargs):
-        self.state = state
-        super().__init__(*args, **kwargs)
-
-    def forward(self, src: str, dest: str) -> bool:
+    def __call__(self, src: str, dest: str):
         """Copy file to remote machine
 
         Args:
@@ -22,25 +18,24 @@ class Copy(Tool):
             dest: The destination of the file
 
         Returns:
-            boolean
+            Copy operation result
         """
-
-        src = safe_join_path(self.state["workspace"], src)
+        workspace = getattr(self.context, 'workspace', '.')
+        src = safe_join_path(workspace, src)
 
         if src is None:
             return False
 
-        display_tool(self, self.state["console"], self.state["log"])
+        display_tool(self, self.context.console, getattr(self.context, 'log', None))
+        
         output = ftl.copy_sync(
-            self.state["inventory"],
-            self.state["gate_cache"],
-            src=safe_join_path(self.state["workspace"], src),
+            self.context.inventory,
+            getattr(self.context, 'gate_cache', None),
+            src=safe_join_path(workspace, src),
             dest=dest,
-            loop=self.state["loop"],
+            loop=getattr(self.context, 'loop', None),
         )
 
-        display_results({}, self.state["console"], self.state["log"])
+        display_results({}, self.context.console, getattr(self.context, 'log', None))
 
         return output
-
-    description, inputs, output_type = get_json_schema(forward)
