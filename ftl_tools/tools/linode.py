@@ -8,22 +8,11 @@ from ftl_tools.utils import display_results, display_tool
 
 
 class Linode(AutomationTool):
-    name = "linode_tool"
-    module = None
+    name = "linode"
+    module = None  # This tool doesn't use FTL modules, it uses Linode API directly
     description = "Provisions a new linode server"
 
-    def __init__(self, inventory, modules, console, secrets=None, **kwargs):
-        super().__init__(inventory, modules, console, secrets, **kwargs)
-        # Build state dictionary for compatibility
-        self.state = {
-            "inventory": inventory,
-            "modules": modules,
-            "console": console,
-            "secrets": secrets or {},
-            **kwargs
-        }
-
-    def forward(self, name: str, image: str = "linode/fedora40", ltype: str = "g6-nanode-1"):
+    def __call__(self, name: str, image: str = "linode/fedora40", ltype: str = "g6-nanode-1"):
         """Provisions a new linode server
 
         Args:
@@ -34,19 +23,19 @@ class Linode(AutomationTool):
         Returns:
             Server provisioning result
         """
-        display_tool(self, self.state["console"], self.state.get("log"))
+        display_tool(self, self.context.console, getattr(self.context, 'log', None))
 
-        pprint(self.state["inventory"], console=self.state["console"])
+        pprint(self.context.inventory, console=self.context.console)
 
         # Create a Linode API client
-        client = LinodeClient(str(self.state["secrets"]["LINODE_TOKEN"]))
-        root_pass = self.state["secrets"]["LINODE_ROOT_PASS"]
+        client = LinodeClient(str(self.context.secrets["LINODE_TOKEN"]))
+        root_pass = self.context.secrets["LINODE_ROOT_PASS"]
 
         my_linodes = client.linode.instances()
 
         for instance in my_linodes:
             if instance.label == name:
-                self.state["console"].print(f"Already created {name}")
+                self.context.console.print(f"Already created {name}")
                 return {
                     "id": instance.id,
                     "label": instance.label,
@@ -68,7 +57,7 @@ class Linode(AutomationTool):
         )
 
         # Print info about the Linode
-        self.state["console"].print("Linode IP:", new_linode.ipv4[0])
+        self.context.console.print("Linode IP:", new_linode.ipv4[0])
 
         host_data = {
             "ansible_user": "root",
@@ -77,18 +66,19 @@ class Linode(AutomationTool):
             "host_name": name,
         }
         
-        if self.state["inventory"].get("all") is None:
-            self.state["inventory"]["all"] = {}
-        if self.state["inventory"]["all"].get("hosts") is None:
-            self.state["inventory"]["all"]["hosts"] = {}
-        self.state["inventory"]["all"]["hosts"][name] = host_data
+        if self.context.inventory.get("all") is None:
+            self.context.inventory["all"] = {}
+        if self.context.inventory["all"].get("hosts") is None:
+            self.context.inventory["all"]["hosts"] = {}
+        self.context.inventory["all"]["hosts"][name] = host_data
 
         # Save inventory if file path provided
-        if self.state.get("inventory_file"):
-            with open(self.state["inventory_file"], "w") as f:
-                f.write(yaml.safe_dump(self.state["inventory"]))
+        inventory_file = getattr(self.context, 'inventory_file', None)
+        if inventory_file:
+            with open(inventory_file, "w") as f:
+                f.write(yaml.safe_dump(self.context.inventory))
 
-        pprint(self.state["inventory"], console=self.state["console"])
+        pprint(self.context.inventory, console=self.context.console)
 
         return {
             "id": new_linode.id,
@@ -99,24 +89,3 @@ class Linode(AutomationTool):
             "ipv4": new_linode.ipv4,
             "ipv6": new_linode.ipv6
         }
-
-
-# Create function interface for ftl-automation  
-def linode_tool(inventory, modules, console, name: str, 
-                image: str = "linode/fedora40", ltype: str = "g6-nanode-1", **kwargs):
-    """Provisions a new linode server.
-    
-    Args:
-        inventory: Target systems/hosts configuration
-        modules: Available automation modules
-        console: Rich console for formatted output
-        name: the name of the server
-        image: the name of the server image to use
-        ltype: the linode type of the server
-        **kwargs: Additional context including secrets
-        
-    Returns:
-        Server provisioning result
-    """
-    tool = Linode(inventory, modules, console, **kwargs)
-    return tool(name=name, image=image, ltype=ltype)
