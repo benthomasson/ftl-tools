@@ -33,7 +33,7 @@ class Slack(AutomationTool):
             module_args["channel"] = channel
             
         output = ftl.run_module_sync(
-            self.context.inventory,
+            self.context.localhost,
             self.context.modules,
             "slack",
             getattr(self.context, 'gate_cache', None),
