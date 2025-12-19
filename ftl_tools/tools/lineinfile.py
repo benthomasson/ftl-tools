@@ -1,20 +1,16 @@
-from smolagents.tools import Tool
-from ftlagents.tools import get_json_schema
+#!/usr/bin/env python3
 import faster_than_light as ftl
+
+from ftl_automation import AutomationTool
 from ftl_tools.utils import dependencies, display_results, display_tool
 
 
-class LineInFile(Tool):
-    name = "lineinfile_tool"
+class LineInFile(AutomationTool):
+    name = "lineinfile"
     module = "lineinfile"
+    description = "Add or modify a line in a file"
 
-    def __init__(self, state, *args, **kwargs):
-        self.state = state
-        super().__init__(*args, **kwargs)
-
-    def forward(
-        self, line: str, path: str, state: str = "present", regexp: str = None
-    ) -> bool:
+    def __call__(self, line: str, path: str, state: str = "present", regexp: str = None):
         """Add a line to a file
 
         Args:
@@ -24,40 +20,32 @@ class LineInFile(Tool):
             regexp: the regular expression of the line to replace
 
         Returns:
-            boolean
+            Module execution result
         """
-        display_tool(self, self.state["console"], self.state["log"])
+        display_tool(self, self.context.console, getattr(self.context, 'log', None))
+        
         output = ftl.run_module_sync(
-            self.state["inventory"],
-            self.state["modules"],
+            self.context.inventory,
+            self.context.modules,
             "lineinfile",
-            self.state["gate_cache"],
+            getattr(self.context, 'gate_cache', None),
             module_args=dict(line=line, state=state, path=path, regexp=regexp),
             dependencies=dependencies,
-            loop=self.state["loop"],
-            use_gate=self.state["gate"],
+            loop=getattr(self.context, 'loop', None),
+            use_gate=getattr(self.context, 'use_gate', False),
         )
 
-        display_results(output, self.state["console"], self.state["log"])
+        display_results(output, self.context.console, getattr(self.context, 'log', None))
 
         return output
 
-    description, inputs, output_type = get_json_schema(forward)
 
-
-class AddLineToFile(Tool):
-    name = "addlinetofile_tool"
+class AddLineToFile(AutomationTool):
+    name = "addlinetofile"
     module = "lineinfile"
+    description = "Add a line to a file"
 
-    def __init__(self, state, *args, **kwargs):
-        self.state = state
-        super().__init__(*args, **kwargs)
-
-    def forward(
-        self,
-        line: str,
-        path: str,
-    ) -> bool:
+    def __call__(self, line: str, path: str):
         """Add a line to a file
 
         Args:
@@ -65,36 +53,32 @@ class AddLineToFile(Tool):
             path: the path to the file
 
         Returns:
-            boolean
+            Module execution result
         """
-        display_tool(self, self.state["console"], self.state["log"])
+        display_tool(self, self.context.console, getattr(self.context, 'log', None))
+        
         output = ftl.run_module_sync(
-            self.state["inventory"],
-            self.state["modules"],
+            self.context.inventory,
+            self.context.modules,
             "lineinfile",
-            self.state["gate_cache"],
+            getattr(self.context, 'gate_cache', None),
             module_args=dict(line=line, state="present", path=path),
             dependencies=dependencies,
-            loop=self.state["loop"],
-            use_gate=self.state["gate"],
+            loop=getattr(self.context, 'loop', None),
+            use_gate=getattr(self.context, 'use_gate', False),
         )
 
-        display_results(output, self.state["console"], self.state["log"])
+        display_results(output, self.context.console, getattr(self.context, 'log', None))
 
         return output
 
-    description, inputs, output_type = get_json_schema(forward)
 
-
-class ReplaceLineInFile(Tool):
-    name = "replacelineinfile_tool"
+class ReplaceLineInFile(AutomationTool):
+    name = "replacelineinfile"
     module = "lineinfile"
+    description = "Replace a line in a file with another line"
 
-    def __init__(self, state, *args, **kwargs):
-        self.state = state
-        super().__init__(*args, **kwargs)
-
-    def forward(self, line: str, path: str, pattern: str = None) -> bool:
+    def __call__(self, line: str, path: str, pattern: str = None):
         """Replace a line in a file with another line
 
         Args:
@@ -103,22 +87,21 @@ class ReplaceLineInFile(Tool):
             path: the path to the file
 
         Returns:
-            boolean
+            Module execution result
         """
-        display_tool(self, self.state["console"], self.state["log"])
+        display_tool(self, self.context.console, getattr(self.context, 'log', None))
+        
         output = ftl.run_module_sync(
-            self.state["inventory"],
-            self.state["modules"],
+            self.context.inventory,
+            self.context.modules,
             "lineinfile",
-            self.state["gate_cache"],
+            getattr(self.context, 'gate_cache', None),
             module_args=dict(line=line, state="present", path=path, regexp=pattern),
             dependencies=dependencies,
-            loop=self.state["loop"],
-            use_gate=self.state["gate"],
+            loop=getattr(self.context, 'loop', None),
+            use_gate=getattr(self.context, 'use_gate', False),
         )
 
-        display_results(output, self.state["console"], self.state["log"])
+        display_results(output, self.context.console, getattr(self.context, 'log', None))
 
         return output
-
-    description, inputs, output_type = get_json_schema(forward)
