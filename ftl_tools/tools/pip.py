@@ -1,18 +1,16 @@
-from smolagents.tools import Tool
-from ftlagents.tools import get_json_schema
+#!/usr/bin/env python3
 import faster_than_light as ftl
+
+from ftl_automation import AutomationTool
 from ftl_tools.utils import dependencies, display_results, display_tool
 
 
-class Pip(Tool):
-    name = "pip_tool"
+class Pip(AutomationTool):
+    name = "pip"
     module = "pip"
+    description = "Install python packages using pip"
 
-    def __init__(self, state, *args, **kwargs):
-        self.state = state
-        super().__init__(*args, **kwargs)
-
-    def forward(self, name: str, state: str = "present") -> bool:
+    def __call__(self, name: str, state: str = "present"):
         """Install python packages using pip
 
         Args:
@@ -20,36 +18,32 @@ class Pip(Tool):
             state: one of latest, present, absent
 
         Returns:
-            boolean
+            Module execution result
         """
-        display_tool(self, self.state["console"], self.state["log"])
+        display_tool(self, self.context.console, getattr(self.context, 'log', None))
+        
         output = ftl.run_module_sync(
-            self.state["inventory"],
-            self.state["modules"],
+            self.context.inventory,
+            self.context.modules,
             "pip",
-            self.state["gate_cache"],
+            getattr(self.context, 'gate_cache', None),
             module_args=dict(name=name, state=state),
             dependencies=dependencies,
-            loop=self.state["loop"],
-            use_gate=self.state["gate"],
+            loop=getattr(self.context, 'loop', None),
+            use_gate=getattr(self.context, 'use_gate', False),
         )
 
-        display_results(output, self.state["console"], self.state["log"])
+        display_results(output, self.context.console, getattr(self.context, 'log', None))
 
         return output
 
-    description, inputs, output_type = get_json_schema(forward)
 
-
-class PipRequirements(Tool):
-    name = "pip_requirements_tool"
+class PipRequirements(AutomationTool):
+    name = "pip_requirements"
     module = "pip"
+    description = "Install dependencies from python requirements.txt files using pip"
 
-    def __init__(self, state, *args, **kwargs):
-        self.state = state
-        super().__init__(*args, **kwargs)
-
-    def forward(self, requirements: str, venv: str) -> bool:
+    def __call__(self, requirements: str, venv: str):
         """Install dependencies from python requirements.txt files using pip.
 
         Args:
@@ -57,26 +51,25 @@ class PipRequirements(Tool):
             venv: the path to the virtual environment to install the packages to
 
         Returns:
-            boolean
+            Module execution result
         """
-        display_tool(self, self.state["console"], self.state["log"])
+        display_tool(self, self.context.console, getattr(self.context, 'log', None))
+        
         output = ftl.run_module_sync(
-            self.state["inventory"],
-            self.state["modules"],
+            self.context.inventory,
+            self.context.modules,
             "pip",
-            self.state["gate_cache"],
+            getattr(self.context, 'gate_cache', None),
             module_args=dict(
                 requirements=requirements,
                 virtualenv=venv,
                 virtualenv_command="python3 -m venv",
             ),
             dependencies=dependencies,
-            loop=self.state["loop"],
-            use_gate=self.state["gate"],
+            loop=getattr(self.context, 'loop', None),
+            use_gate=getattr(self.context, 'use_gate', False),
         )
 
-        display_results(output, self.state["console"], self.state["log"])
+        display_results(output, self.context.console, getattr(self.context, 'log', None))
 
         return output
-
-    description, inputs, output_type = get_json_schema(forward)
