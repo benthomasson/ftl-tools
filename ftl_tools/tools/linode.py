@@ -73,9 +73,8 @@ class Linode(AutomationTool):
         self.context.inventory["all"]["hosts"][name] = host_data
 
         # Save inventory if file path provided
-        inventory_file = getattr(self.context, 'inventory_file', None)
-        if inventory_file:
-            with open(inventory_file, "w") as f:
+        if self.context.inventory_file:
+            with open(self.context.inventory_file, "w") as f:
                 f.write(yaml.safe_dump(self.context.inventory))
 
         pprint(self.context.inventory, console=self.context.console)
