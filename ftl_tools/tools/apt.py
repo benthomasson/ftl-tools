@@ -1,18 +1,16 @@
-from smolagents.tools import Tool
-from ftlagents.tools import get_json_schema
+#!/usr/bin/env python3
 import faster_than_light as ftl
+
+from ftl_automation import AutomationTool
 from ftl_tools.utils import dependencies, display_results, display_tool
 
 
-class Apt(Tool):
-    name = "apt_tool"
+class Apt(AutomationTool):
+    name = "apt"
     module = "apt"
+    description = "Control apt packages"
 
-    def __init__(self, state, *args, **kwargs):
-        self.state = state
-        super().__init__(*args, **kwargs)
-
-    def forward(self, update_cache: bool = False, upgrade: str = "no") -> bool:
+    def __call__(self, update_cache: bool = False, upgrade: str = "no"):
         """Control apt packages
 
         Args:
@@ -20,22 +18,21 @@ class Apt(Tool):
             upgrade: Either yes, safe, or no.
 
         Returns:
-            boolean
+            Module execution result
         """
-        display_tool(self, self.state["console"], self.state["log"])
+        display_tool(self, self.context.console, getattr(self.context, 'log', None))
+        
         output = ftl.run_module_sync(
-            self.state["inventory"],
-            self.state["modules"],
+            self.context.inventory,
+            self.context.modules,
             "apt",
-            self.state["gate_cache"],
+            getattr(self.context, 'gate_cache', None),
             module_args=dict(update_cache=update_cache, upgrade=upgrade),
             dependencies=dependencies,
-            loop=self.state["loop"],
-            use_gate=self.state["gate"],
+            loop=getattr(self.context, 'loop', None),
+            use_gate=getattr(self.context, 'use_gate', False),
         )
 
-        display_results(output, self.state["console"], self.state["log"])
+        display_results(output, self.context.console, getattr(self.context, 'log', None))
 
         return output
-
-    description, inputs, output_type = get_json_schema(forward)
