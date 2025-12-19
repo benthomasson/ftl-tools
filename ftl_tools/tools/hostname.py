@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import faster_than_light as ftl
 
-from ftl_tools.base_tool import AutomationTool
+from ftl_automation import AutomationTool
 from ftl_tools.utils import dependencies, display_results, display_tool
 
 

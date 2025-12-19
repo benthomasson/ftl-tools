@@ -3,7 +3,7 @@ import yaml
 from linode_api4 import LinodeClient
 from rich.pretty import pprint
 
-from ftl_tools.base_tool import AutomationTool
+from ftl_automation import AutomationTool
 from ftl_tools.utils import display_results, display_tool
 
 
