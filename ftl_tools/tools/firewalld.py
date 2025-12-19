@@ -1,22 +1,16 @@
 #!/usr/bin/env python3
-from smolagents.tools import Tool
-from ftlagents.tools import get_json_schema
-
 import faster_than_light as ftl
 
+from ftl_automation import AutomationTool
 from ftl_tools.utils import dependencies, display_results, display_tool
 
 
-class FirewallD(Tool):
-    name = "firewalld_tool"
+class FirewallD(AutomationTool):
+    name = "firewalld"
+    module = "firewalld"
+    description = "Configure firewalld"
 
-    def __init__(self, state, *args, **kwargs):
-        self.state = state
-        super().__init__(*args, **kwargs)
-
-    def forward(
-        self, port: str, state: str, protocol: str = None, permanent: bool = True
-    ) -> bool:
+    def __call__(self, port: str, state: str, protocol: str = None, permanent: bool = True):
         """Configure firewalld
 
         Args:
@@ -26,7 +20,7 @@ class FirewallD(Tool):
             permanent: True if permanent
 
         Returns:
-            boolean
+            Module execution result
         """
         if isinstance(port, int):
             if protocol:
@@ -42,24 +36,24 @@ class FirewallD(Tool):
                 port = f"{port}/{protocol}"
             else:
                 port = f"{port}/tcp"
-        display_tool(self, self.state["console"], self.state["log"])
+        
+        display_tool(self, self.context.console, getattr(self.context, 'log', None))
+        
         output = ftl.run_module_sync(
-            self.state["inventory"],
-            self.state["modules"],
+            self.context.inventory,
+            self.context.modules,
             "firewalld",
-            self.state["gate_cache"],
+            getattr(self.context, 'gate_cache', None),
             module_args=dict(
                 port=port,
                 state=state,
                 permanent=permanent,
             ),
             dependencies=dependencies,
-            loop=self.state["loop"],
-            use_gate=self.state["gate"],
+            loop=getattr(self.context, 'loop', None),
+            use_gate=getattr(self.context, 'use_gate', False),
         )
 
-        display_results(output, self.state["console"], self.state["log"])
+        display_results(output, self.context.console, getattr(self.context, 'log', None))
 
         return output
-
-    description, inputs, output_type = get_json_schema(forward)
