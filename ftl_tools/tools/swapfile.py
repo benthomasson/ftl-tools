@@ -1,21 +1,16 @@
 #!/usr/bin/env python3
-from smolagents.tools import Tool
-from ftlagents.tools import get_json_schema
-
 import faster_than_light as ftl
 
+from ftl_automation import AutomationTool
 from ftl_tools.utils import dependencies, display_results, display_tool
 
 
-class SwapFile(Tool):
-    name = "swapfile_tool"
+class SwapFile(AutomationTool):
+    name = "swapfile"
     module = "command"
+    description = "Creates a swapfile"
 
-    def __init__(self, state, *args, **kwargs):
-        self.state = state
-        super().__init__(*args, **kwargs)
-
-    def forward(self, location: str, size: int, permanent: bool = True) -> bool:
+    def __call__(self, location: str, size: int, permanent: bool = True):
         """Creates a swapfile
 
         Args:
@@ -24,28 +19,27 @@ class SwapFile(Tool):
             permanent: True if permanent
 
         Returns:
-            boolean
+            Module execution result
         """
-        display_tool(self, self.state["console"], self.state["log"])
+        display_tool(self, self.context.console, getattr(self.context, 'log', None))
 
         def run_command(command):
-
             output = ftl.run_module_sync(
-                self.state["inventory"],
-                self.state["modules"],
+                self.context.inventory,
+                self.context.modules,
                 "command",
-                self.state["gate_cache"],
+                getattr(self.context, 'gate_cache', None),
                 module_args=dict(
                     _uses_shell=True,
                     _raw_params=command,
                     creates=location,
                 ),
                 dependencies=dependencies,
-                loop=self.state["loop"],
-                use_gate=self.state["gate"],
+                loop=getattr(self.context, 'loop', None),
+                use_gate=getattr(self.context, 'use_gate', False),
             )
 
-            display_results(output, self.state["console"], self.state["log"])
+            display_results(output, self.context.console, getattr(self.context, 'log', None))
 
             return output
 
@@ -57,5 +51,3 @@ class SwapFile(Tool):
         )
 
         return output
-
-    description, inputs, output_type = get_json_schema(forward)
