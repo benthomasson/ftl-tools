@@ -10,18 +10,11 @@ class Bash(AutomationTool):
     module = "command"
     description = "Run a bash script"
 
-    def __init__(self, inventory, modules, console, secrets=None, **kwargs):
-        super().__init__(inventory, modules, console, secrets, **kwargs)
-        # Build state dictionary for compatibility
-        self.state = {
-            "inventory": inventory,
-            "modules": modules,
-            "console": console,
-            "secrets": secrets or {},
-            **kwargs
-        }
+    def __init__(self, context):
+        """Initialize with AutomationContext."""
+        self.context = context
 
-    def forward(self, script: str, user: str):
+    def __call__(self, script: str, user: str):
         """Run a bash script
 
         Args:
@@ -31,40 +24,23 @@ class Bash(AutomationTool):
         Returns:
             Module execution result
         """
-        display_tool(self, self.state["console"], self.state.get("log"))
+        display_tool(self, self.context.console, getattr(self.context, "log", None))
 
         output = ftl.run_module_sync(
-            self.state["inventory"],
-            self.state["modules"],
+            self.context.inventory,
+            self.context.modules,
             "command",
-            self.state.get("gate_cache"),
+            self.context.gate_cache,
             module_args=dict(
                 _uses_shell=True, _raw_params=f"sudo -u {user} bash {script}"
             ),
             dependencies=dependencies,
-            loop=self.state.get("loop"),
-            use_gate=self.state.get("gate"),
+            loop=getattr(self.context, "loop", None),
+            use_gate=self.context.use_gate,
         )
 
-        display_results(output, self.state["console"], self.state.get("log"))
+        display_results(output, self.context.console, getattr(self.context, "log", None))
 
         return output
 
 
-# Create function interface for ftl-automation
-def bash_tool(inventory, modules, console, script: str, user: str, **kwargs):
-    """Run a bash script.
-    
-    Args:
-        inventory: Target systems/hosts configuration
-        modules: Available automation modules
-        console: Rich console for formatted output
-        script: the path of the script to run
-        user: the user to run the script as
-        **kwargs: Additional context
-        
-    Returns:
-        Module execution result
-    """
-    tool = Bash(inventory, modules, console, **kwargs)
-    return tool(script=script, user=user)
