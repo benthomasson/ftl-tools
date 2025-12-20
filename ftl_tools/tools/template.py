@@ -1,20 +1,19 @@
-from smolagents.tools import Tool
-from ftlagents.tools import get_json_schema
+#!/usr/bin/env python3
 import faster_than_light as ftl
+
+from ftl_automation import AutomationTool
 from ftl_tools.utils import dependencies, display_results, display_tool, safe_join_path
 
 
-
-
-class Template(Tool):
+class Template(AutomationTool):
     name = "template_tool"
+    description = "Template a local file and copy the result to a remote machine"
 
-    def __init__(self, state, *args, **kwargs):
-        self.state = state
-        super().__init__(*args, **kwargs)
+    def __init__(self, context):
+        """Initialize with AutomationContext."""
+        self.context = context
 
-
-    def forward(self, src: str, dest: str) -> bool:
+    def __call__(self, src: str, dest: str):
         """Template a local file and copy the result to a remote machine.
 
         Args:
@@ -22,25 +21,23 @@ class Template(Tool):
             dest: The destination of the file
 
         Returns:
-            boolean
+            Module execution result or False if source path is invalid
         """
 
-        src = safe_join_path(self.state["workspace"], src)
+        src = safe_join_path(getattr(self.context, "workspace", "."), src)
 
         if src is None:
             return False
 
-        display_tool(self, self.state["console"], self.state["log"])
+        display_tool(self, self.context.console, getattr(self.context, "log", None))
         output = ftl.template_sync(
-            self.state["inventory"],
-            self.state["gate_cache"],
+            self.context.inventory,
+            self.context.gate_cache,
             src=src,
             dest=dest,
-            loop=self.state["loop"],
+            loop=getattr(self.context, "loop", None),
         )
 
-        display_results(output, self.state["console"], self.state["log"])
+        display_results(output, self.context.console, getattr(self.context, "log", None))
 
         return output
-
-    description, inputs, output_type = get_json_schema(forward)
