@@ -1,121 +1,119 @@
-from smolagents.tools import Tool
-from ftlagents.tools import get_json_schema
+#!/usr/bin/env python3
 import faster_than_light as ftl
+
+from ftl_automation import AutomationTool
 from ftl_tools.utils import dependencies, display_results, display_tool
 
 
-class PodmanVersion(Tool):
+class PodmanVersion(AutomationTool):
     name = "podman_version_tool"
     module = "command"
+    description = "Gets the podman version"
 
-    def __init__(self, state, *args, **kwargs):
-        self.state = state
-        super().__init__(*args, **kwargs)
+    def __init__(self, context):
+        """Initialize with AutomationContext."""
+        self.context = context
 
-    def forward(self) -> bool:
+    def __call__(self):
         """Gets the podman version
 
         Returns:
-            boolean
+            Module execution result
         """
-        display_tool(self, self.state["console"], self.state["log"])
+        display_tool(self, self.context.console, getattr(self.context, "log", None))
 
         output = ftl.run_module_sync(
-            self.state["inventory"],
-            self.state["modules"],
+            self.context.inventory,
+            self.context.modules,
             "command",
-            self.state["gate_cache"],
+            self.context.gate_cache,
             module_args=dict(
                 _uses_shell=True,
                 _raw_params="podman --version",
             ),
             dependencies=dependencies,
-            loop=self.state["loop"],
-            use_gate=self.state["gate"],
+            loop=getattr(self.context, "loop", None),
+            use_gate=self.context.use_gate,
         )
 
-        display_results(output, self.state["console"], self.state["log"])
+        display_results(output, self.context.console, getattr(self.context, "log", None))
 
-        return True
-
-    description, inputs, output_type = get_json_schema(forward)
+        return output
 
 
-class PodmanPull(Tool):
+class PodmanPull(AutomationTool):
     name = "podman_pull_tool"
     module = "command"
+    description = "Pulls a container image using podman"
 
-    def __init__(self, state, *args, **kwargs):
-        self.state = state
-        super().__init__(*args, **kwargs)
+    def __init__(self, context):
+        """Initialize with AutomationContext."""
+        self.context = context
 
-    def forward(self, image: str) -> bool:
+    def __call__(self, image: str):
         """Pulls a container image using podman
 
         Args:
             image: the container image to pull
 
         Returns:
-            boolean
+            Module execution result
         """
-        display_tool(self, self.state["console"], self.state["log"])
+        display_tool(self, self.context.console, getattr(self.context, "log", None))
 
         output = ftl.run_module_sync(
-            self.state["inventory"],
-            self.state["modules"],
+            self.context.inventory,
+            self.context.modules,
             "command",
-            self.state["gate_cache"],
+            self.context.gate_cache,
             module_args=dict(
                 _uses_shell=True,
                 _raw_params=f"podman pull {image}",
             ),
             dependencies=dependencies,
-            loop=self.state["loop"],
-            use_gate=self.state["gate"],
+            loop=getattr(self.context, "loop", None),
+            use_gate=self.context.use_gate,
         )
 
-        display_results(output, self.state["console"], self.state["log"])
+        display_results(output, self.context.console, getattr(self.context, "log", None))
 
-        return True
-
-    description, inputs, output_type = get_json_schema(forward)
+        return output
 
 
-class PodmanRun(Tool):
+class PodmanRun(AutomationTool):
     name = "podman_run_tool"
     module = "command"
+    description = "Runs a container image using podman"
 
-    def __init__(self, state, *args, **kwargs):
-        self.state = state
-        super().__init__(*args, **kwargs)
+    def __init__(self, context):
+        """Initialize with AutomationContext."""
+        self.context = context
 
-    def forward(self, image: str) -> bool:
+    def __call__(self, image: str):
         """Runs a container image using podman
 
         Args:
             image: the container image to run
 
         Returns:
-            boolean
+            Module execution result
         """
-        display_tool(self, self.state["console"], self.state["log"])
+        display_tool(self, self.context.console, getattr(self.context, "log", None))
 
         output = ftl.run_module_sync(
-            self.state["inventory"],
-            self.state["modules"],
+            self.context.inventory,
+            self.context.modules,
             "command",
-            self.state["gate_cache"],
+            self.context.gate_cache,
             module_args=dict(
                 _uses_shell=True,
                 _raw_params=f"podman run -it {image}",
             ),
             dependencies=dependencies,
-            loop=self.state["loop"],
-            use_gate=self.state["gate"],
+            loop=getattr(self.context, "loop", None),
+            use_gate=self.context.use_gate,
         )
 
-        display_results(output, self.state["console"], self.state["log"])
+        display_results(output, self.context.console, getattr(self.context, "log", None))
 
-        return True
-
-    description, inputs, output_type = get_json_schema(forward)
+        return output
