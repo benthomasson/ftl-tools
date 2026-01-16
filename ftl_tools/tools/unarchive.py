@@ -6,7 +6,7 @@ from ftl_tools.utils import dependencies, display_results, display_tool
 
 
 class Unarchive(AutomationTool):
-    name = "unarchive_tool"
+    name = "unarchive"
     module = "unarchive"
     description = "Unarchives files from the archive file to the destination directory"
 

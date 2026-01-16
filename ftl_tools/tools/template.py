@@ -6,7 +6,7 @@ from ftl_tools.utils import dependencies, display_results, display_tool, safe_jo
 
 
 class Template(AutomationTool):
-    name = "template_tool"
+    name = "template"
     description = "Template a local file and copy the result to a remote machine"
 
     def __init__(self, context):

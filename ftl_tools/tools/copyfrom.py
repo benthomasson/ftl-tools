@@ -6,7 +6,7 @@ from ftl_tools.utils import display_results, display_tool, safe_join_path
 
 
 class CopyFrom(AutomationTool):
-    name = "copy_from_tool"
+    name = "copyfrom"
     description = "Copy file from remote machine locally"
 
     def __init__(self, context):

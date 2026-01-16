@@ -6,7 +6,7 @@ from ftl_tools.utils import dependencies, display_results, display_tool
 
 
 class JavaJar(AutomationTool):
-    name = "java_jar_tool"
+    name = "java_jar"
     module = "command"
     description = "Run a java jar"
 

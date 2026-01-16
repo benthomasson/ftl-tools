@@ -6,7 +6,7 @@ from ftl_tools.utils import dependencies, display_results, display_tool
 
 
 class Timezone(AutomationTool):
-    name = "timezone_tool"
+    name = "timezone"
     module = "timezone"
     description = "Configure timezone setting"
 

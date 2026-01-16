@@ -6,7 +6,7 @@ from ftl_tools.utils import dependencies, display_results, display_tool
 
 
 class SetSeBool(AutomationTool):
-    name = "setsebool_tool"
+    name = "setsebool"
     module = "command"
     description = "Sets SELinux boolean values"
 

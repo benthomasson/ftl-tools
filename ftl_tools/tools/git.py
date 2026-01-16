@@ -6,7 +6,7 @@ from ftl_tools.utils import dependencies, display_results, display_tool
 
 
 class Git(AutomationTool):
-    name = "git_tool"
+    name = "git"
     module = "git"
     description = "Deploy software (or files) from git checkouts"
 

@@ -6,7 +6,7 @@ from ftl_tools.utils import dependencies, display_results, display_tool
 
 
 class Discord(AutomationTool):
-    name = "discord_tool"
+    name = "discord"
     module = "discord"
     description = "Sends a message to discord"
 

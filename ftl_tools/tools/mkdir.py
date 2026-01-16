@@ -6,7 +6,7 @@ from ftl_tools.utils import display_results, display_tool
 
 
 class Mkdir(AutomationTool):
-    name = "mkdir_tool"
+    name = "mkdir"
     description = "Make a directory on the remote machine"
 
     def __init__(self, context):

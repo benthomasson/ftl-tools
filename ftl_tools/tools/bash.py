@@ -6,7 +6,7 @@ from ftl_tools.utils import dependencies, display_results, display_tool
 
 
 class Bash(AutomationTool):
-    name = "bash_tool"
+    name = "bash"
     module = "command"
     description = "Run a bash script"
 

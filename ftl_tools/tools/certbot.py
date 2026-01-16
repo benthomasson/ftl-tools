@@ -6,7 +6,7 @@ from ftl_tools.utils import dependencies, display_results, display_tool
 
 
 class Certbot(AutomationTool):
-    name = "certbot_tool"
+    name = "certbot"
     module = "command"
     description = "Configure SSL certificates using certbot for nginx"
 

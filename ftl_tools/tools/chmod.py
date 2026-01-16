@@ -6,7 +6,7 @@ from ftl_tools.utils import dependencies, display_results, display_tool
 
 
 class Chmod(AutomationTool):
-    name = "chmod_tool"
+    name = "chmod"
     module = "command"
     description = "Changes the permissions of a file or directory"
 
