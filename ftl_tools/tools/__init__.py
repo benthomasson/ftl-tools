@@ -11,20 +11,19 @@ from .copy import Copy
 from .copyfrom import CopyFrom
 from .discord import Discord
 from .dnf import Dnf
-from .firewalld import Firewalld
-from .get_url import GetUrl
+from .firewalld import FirewallD
+from .get_url import GetURL
 from .git import Git
 from .java_jar import JavaJar
 from .lineinfile import LineInFile
 from .linode import Linode
 from .mkdir import Mkdir
 from .pip import Pip
-from .podman import Podman
 from .service import Service
-from .setsebool import SetSebool
+from .setsebool import SetSeBool
 from .slack import Slack
 from .swapfile import SwapFile
-from .systemd_service import SystemdService
+from .systemd_service import SystemDService
 from .template import Template
 from .timezone import Timezone
 from .unarchive import Unarchive
@@ -42,20 +41,19 @@ __all__ = [
     "CopyFrom",
     "Discord",
     "Dnf",
-    "Firewalld",
-    "GetUrl",
+    "FirewallD",
+    "GetURL",
     "Git",
     "JavaJar",
     "LineInFile",
     "Linode",
     "Mkdir",
     "Pip",
-    "Podman",
     "Service",
-    "SetSebool",
-    "Slack",
+    "SetSeBool",
+    "Slack", 
     "SwapFile",
-    "SystemdService",
+    "SystemDService",
     "Template",
     "Timezone",
     "Unarchive",
