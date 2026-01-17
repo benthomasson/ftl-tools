@@ -13,11 +13,11 @@ class Mkdir(AutomationTool):
         """Initialize with AutomationContext."""
         self.context = context
 
-    def __call__(self, name: str):
+    def __call__(self, path: str):
         """Make a directory on the remote machine
 
         Args:
-            name: The name of the directory
+            path: The path of the directory
 
         Returns:
             True on successful completion
@@ -26,7 +26,7 @@ class Mkdir(AutomationTool):
         ftl.mkdir_sync(
             self.context.inventory,
             self.context.gate_cache,
-            name=name,
+            path=path,
             loop=getattr(self.context, "loop", None),
         )
 

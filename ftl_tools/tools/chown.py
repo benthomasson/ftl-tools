@@ -10,12 +10,12 @@ class Chown(AutomationTool):
     module = "command"
     description = "Changes the ownership of a directory and the files in it"
 
-    def __call__(self, user: str, location: str):
+    def __call__(self, user: str, path: str):
         """Changes the ownership of a directory and the files in it.
 
         Args:
-            user: The new owner of the location
-            location: The location to change ownership
+            user: The new owner of the path
+            path: The path to change ownership
 
         Returns:
             Module execution result
@@ -29,7 +29,7 @@ class Chown(AutomationTool):
             getattr(self.context, 'gate_cache', None),
             module_args=dict(
                 _uses_shell=True,
-                _raw_params=f"chown -R {user} {location}",
+                _raw_params=f"chown -R {user} {path}",
             ),
             dependencies=dependencies,
             loop=getattr(self.context, 'loop', None),
