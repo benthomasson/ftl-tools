@@ -39,16 +39,23 @@ class FirewallD(AutomationTool):
         
         display_tool(self, self.context.console, getattr(self.context, 'log', None))
         
+        # Prepare module args for firewalld operation
+        firewalld_module_args = dict(
+            port=port,
+            state=state,
+            permanent=permanent,
+        )
+        
+        # Add check_mode if in dry run
+        if getattr(self.context, 'dry_run', False):
+            firewalld_module_args['_ansible_check_mode'] = True
+
         output = ftl.run_module_sync(
             self.context.inventory,
             self.context.modules,
             "firewalld",
             getattr(self.context, 'gate_cache', None),
-            module_args=dict(
-                port=port,
-                state=state,
-                permanent=permanent,
-            ),
+            module_args=firewalld_module_args,
             dependencies=dependencies,
             loop=getattr(self.context, 'loop', None),
             use_gate=getattr(self.context, 'use_gate', False),

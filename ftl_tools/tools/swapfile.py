@@ -24,16 +24,23 @@ class SwapFile(AutomationTool):
         display_tool(self, self.context.console, getattr(self.context, 'log', None))
 
         def run_command(command):
+            # Prepare module args
+            module_args = dict(
+                _uses_shell=True,
+                _raw_params=command,
+                creates=path,
+            )
+            
+            # Add check_mode if in dry run
+            if getattr(self.context, 'dry_run', False):
+                module_args['_ansible_check_mode'] = True
+            
             output = ftl.run_module_sync(
                 self.context.inventory,
                 self.context.modules,
                 "command",
                 getattr(self.context, 'gate_cache', None),
-                module_args=dict(
-                    _uses_shell=True,
-                    _raw_params=command,
-                    creates=path,
-                ),
+                module_args=module_args,
                 dependencies=dependencies,
                 loop=getattr(self.context, 'loop', None),
                 use_gate=getattr(self.context, 'use_gate', False),

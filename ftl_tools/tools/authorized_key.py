@@ -31,12 +31,19 @@ class AuthorizedKey(AutomationTool):
         with open(key_file) as f:
             key_value = f.read()
             
+        # Prepare module args for authorized_key operation
+        auth_key_module_args = dict(user=user, state=state, key=key_value)
+        
+        # Add check_mode if in dry run
+        if getattr(self.context, 'dry_run', False):
+            auth_key_module_args['_ansible_check_mode'] = True
+
         output = ftl.run_module_sync(
             self.context.inventory,
             self.context.modules,
             "authorized_key",
             getattr(self.context, 'gate_cache', None),
-            module_args=dict(user=user, state=state, key=key_value),
+            module_args=auth_key_module_args,
             dependencies=dependencies,
             loop=getattr(self.context, 'loop', None),
             use_gate=getattr(self.context, 'use_gate', False),

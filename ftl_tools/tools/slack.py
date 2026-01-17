@@ -31,6 +31,10 @@ class Slack(AutomationTool):
         # Add optional channel if provided
         if channel:
             module_args["channel"] = channel
+        
+        # Add check_mode if in dry run
+        if getattr(self.context, 'dry_run', False):
+            module_args['_ansible_check_mode'] = True
             
         output = ftl.run_module_sync(
             self.context.localhost,

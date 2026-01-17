@@ -24,12 +24,19 @@ class LineInFile(AutomationTool):
         """
         display_tool(self, self.context.console, getattr(self.context, 'log', None))
         
+        # Prepare module args for lineinfile operation
+        lineinfile_module_args = dict(line=line, state=state, path=path, regexp=regexp)
+        
+        # Add check_mode if in dry run
+        if getattr(self.context, 'dry_run', False):
+            lineinfile_module_args['_ansible_check_mode'] = True
+
         output = ftl.run_module_sync(
             self.context.inventory,
             self.context.modules,
             "lineinfile",
             getattr(self.context, 'gate_cache', None),
-            module_args=dict(line=line, state=state, path=path, regexp=regexp),
+            module_args=lineinfile_module_args,
             dependencies=dependencies,
             loop=getattr(self.context, 'loop', None),
             use_gate=getattr(self.context, 'use_gate', False),
@@ -57,12 +64,19 @@ class AddLineToFile(AutomationTool):
         """
         display_tool(self, self.context.console, getattr(self.context, 'log', None))
         
+        # Prepare module args for addlinetofile operation
+        addlinetofile_module_args = dict(line=line, state="present", path=path)
+        
+        # Add check_mode if in dry run
+        if getattr(self.context, 'dry_run', False):
+            addlinetofile_module_args['_ansible_check_mode'] = True
+
         output = ftl.run_module_sync(
             self.context.inventory,
             self.context.modules,
             "lineinfile",
             getattr(self.context, 'gate_cache', None),
-            module_args=dict(line=line, state="present", path=path),
+            module_args=addlinetofile_module_args,
             dependencies=dependencies,
             loop=getattr(self.context, 'loop', None),
             use_gate=getattr(self.context, 'use_gate', False),
@@ -91,12 +105,19 @@ class ReplaceLineInFile(AutomationTool):
         """
         display_tool(self, self.context.console, getattr(self.context, 'log', None))
         
+        # Prepare module args for replacelineinfile operation
+        replacelineinfile_module_args = dict(line=line, state="present", path=path, regexp=pattern)
+        
+        # Add check_mode if in dry run
+        if getattr(self.context, 'dry_run', False):
+            replacelineinfile_module_args['_ansible_check_mode'] = True
+
         output = ftl.run_module_sync(
             self.context.inventory,
             self.context.modules,
             "lineinfile",
             getattr(self.context, 'gate_cache', None),
-            module_args=dict(line=line, state="present", path=path, regexp=pattern),
+            module_args=replacelineinfile_module_args,
             dependencies=dependencies,
             loop=getattr(self.context, 'loop', None),
             use_gate=getattr(self.context, 'use_gate', False),

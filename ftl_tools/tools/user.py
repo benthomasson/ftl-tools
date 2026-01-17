@@ -22,16 +22,23 @@ class User(AutomationTool):
         """
         display_tool(self, self.context.console, getattr(self.context, 'log', None))
         
+        # Prepare module args for user operation
+        user_module_args = dict(
+            name=name,
+            create_home=True,
+            group=group,
+        )
+        
+        # Add check_mode if in dry run
+        if getattr(self.context, 'dry_run', False):
+            user_module_args['_ansible_check_mode'] = True
+
         output = ftl.run_module_sync(
             self.context.inventory,
             self.context.modules,
             "user",
             getattr(self.context, 'gate_cache', None),
-            module_args=dict(
-                name=name,
-                create_home=True,
-                group=group,
-            ),
+            module_args=user_module_args,
             dependencies=dependencies,
             loop=getattr(self.context, 'loop', None),
             use_gate=getattr(self.context, 'use_gate', False),
