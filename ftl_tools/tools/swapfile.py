@@ -10,11 +10,11 @@ class SwapFile(AutomationTool):
     module = "command"
     description = "Creates a swapfile"
 
-    def __call__(self, location: str, size: int, permanent: bool = True):
+    def __call__(self, path: str, size: int, permanent: bool = True):
         """Creates a swapfile
 
         Args:
-            location: The location of the swapfile
+            path: The path of the swapfile
             size: The size of the swapfile
             permanent: True if permanent
 
@@ -32,7 +32,7 @@ class SwapFile(AutomationTool):
                 module_args=dict(
                     _uses_shell=True,
                     _raw_params=command,
-                    creates=location,
+                    creates=path,
                 ),
                 dependencies=dependencies,
                 loop=getattr(self.context, 'loop', None),
@@ -44,10 +44,10 @@ class SwapFile(AutomationTool):
             return output
 
         output = run_command(
-            f"dd if=/dev/zero of={location} bs={size} count={int(size * 1024)} &&"
-            f"chmod 600 {location} &&"
-            f"mkswap {location} &&"
-            f"swapon {location}"
+            f"dd if=/dev/zero of={path} bs={size} count={int(size * 1024)} &&"
+            f"chmod 600 {path} &&"
+            f"mkswap {path} &&"
+            f"swapon {path}"
         )
 
         return output
